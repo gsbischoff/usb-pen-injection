@@ -22,4 +22,24 @@
 #define	LISTENQ		1024	/* 2nd argument to listen() */
 #define SHORT_BUFFSIZE  100     /* For messages I know are short */
 void DieWithError(char *errorMessage); /*Error handling function */
+
+
+struct test
+{
+	union
+	{
+		char n[8];
+		struct
+		{
+			char a;
+			char b;
+			char c;
+			char d;
+			char e;
+			char f;
+			char g;
+			char h;
+		};
+	};
+};
 #endif

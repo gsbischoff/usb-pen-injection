@@ -46,12 +46,21 @@ main(int argc, char **argv)
 	if(connect(sock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
 		DieWithError("connect() failed");
 
+	for(;;)
+	{
+		char RecvBuffer[20];
+		memset(RecvBuffer, 0, 20);
+		if(recv(sock, RecvBuffer, 20, 0) < 0)
+			break;
 
+		RecvBuffer[19] = '\0';
+		printf("%s\n", RecvBuffer);
+	}
 
 
 	closesocket(sock);
 
 	WSACleanup();
-	
+
 	return(0);
 }

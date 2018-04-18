@@ -1,5 +1,9 @@
 #include "NetworkHeader.h"
 
+// -----
+//   PenServer.c
+//		This program implements the connection from the serving
+//			computers using network sockets
 int
 main(int argc, char **argv)
 {
@@ -40,7 +44,17 @@ main(int argc, char **argv)
 	if((ClientSock = accept(ServerSock, (struct sockaddr *) &ClientAddr, &ClientAddrLen)) < 0)
 		DieWithError("accept() failed");
 
-	printf("Recieved connection from %s!", inet_ntoa(ClientAddr.sin_addr));
+	printf("Recieved connection from %s!\n", inet_ntoa(ClientAddr.sin_addr));
+
+	char SendBuffer[20];
+	for(;;)
+	{
+		memset(SendBuffer, 0, 20);
+		fgets(SendBuffer, 20, stdin);
+		SendBuffer[strlen(SendBuffer)] = '\0';
+		printf("Sending \"%s\"", SendBuffer);
+		send(ClientSock, SendBuffer, strlen(SendBuffer), 0);
+	}
 
 	closesocket(ClientSock);
 	closesocket(ServerSock);

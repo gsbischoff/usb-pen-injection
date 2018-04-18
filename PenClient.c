@@ -1,4 +1,5 @@
 #include "NetworkHeader.h"
+#include <time.h>
 
 // -----
 //   PenClient.c
@@ -57,14 +58,37 @@ main(int argc, char **argv)
 		printf("\'%s\'\n", RecvBuffer);
 	}*/
 
-	struct test reciever = { 0 };
 
-	if(recv(sock, (char *) &reciever, sizeof(reciever), 0) <= 0)
-		DieWithError("recv() failed");
+	//int bunch[SENDTEST];
+	int bunchsiz = SENDTEST * sizeof(int);
+	int *bunch = malloc(bunchsiz);
 
-	printf("b is %c", reciever.b);
+//	if(recv(sock, (char *) &reciever, sizeof(reciever), 0) <= 0)
+//		DieWithError("recv() failed");
+	long long int count = 0;
+	long long int temp = 0;
+	long long int remain = bunchsiz;
+	clock_t start, end;
+	printf("Start of recieving\n");
+	start = clock();
 
+	for(;;)
+	{
+		if((temp = recv(sock, (char *) bunch, remain, 0)) <= 0)
+			break;
 
+		printf("Got %lld\n", temp);
+
+		count += temp;
+		remain -= temp;
+	}
+
+	end = clock();
+
+	clock_t diff = end - start;
+	printf("Recieved %lld MB in %.2f secs.\n", count / 1000000, ((double) diff) / CLOCKS_PER_SEC);
+
+	free(bunch);
 	closesocket(sock);
 
 	WSACleanup();

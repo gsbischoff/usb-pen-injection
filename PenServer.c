@@ -58,9 +58,13 @@ main(int argc, char **argv)
 		.g = 'g',
 		.h = 'h',
 	};
-	printf("b is %c", foo.b);
+	//printf("b is %c", foo.b);
+	//int bunch[SENDTEST];
+	int bunchsiz = SENDTEST * sizeof(int);
+	int *bunch = malloc(bunchsiz);
+	printf("Bunch is %d MB\n", bunchsiz / 1000000);
 
-	send(ClientSock, (char *) &foo, sizeof(foo), 0);
+	send(ClientSock, (char *) bunch, bunchsiz, 0);
 /*	for(;;)
 	{
 		memset(SendBuffer, 0, 20);
@@ -69,7 +73,7 @@ main(int argc, char **argv)
 		printf("Sending \"%s\"", SendBuffer);
 		send(ClientSock, SendBuffer, strlen(SendBuffer), 0);
 	}*/
-
+	free(bunch);
 	closesocket(ClientSock);
 	closesocket(ServerSock);
 

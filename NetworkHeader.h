@@ -23,6 +23,7 @@
 #define SHORT_BUFFSIZE  100     /* For messages I know are short */
 void DieWithError(char *errorMessage); /*Error handling function */
 
+#define	SENDTEST	40000000
 
 struct test
 {

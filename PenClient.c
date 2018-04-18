@@ -51,5 +51,7 @@ main(int argc, char **argv)
 
 	closesocket(sock);
 
+	WSACleanup();
+	
 	return(0);
 }

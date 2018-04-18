@@ -14,6 +14,13 @@ main(int argc, char **argv)
 
 	ServerPort = atoi(argv[1]);
 
+	WSADATA data = { 0 };
+
+	WORD wVersionRequested = MAKEWORD(1,1);
+
+	if(WSAStartup(wVersionRequested, &data) < 0)
+		DieWithError("WSAStartup() failed");
+
 	if((ServerSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 		DieWithError("socket() failed");
 
@@ -33,7 +40,11 @@ main(int argc, char **argv)
 	if((ClientSock = accept(ServerSock, (struct sockaddr *) &ClientAddr, &ClientAddrLen)) < 0)
 		DieWithError("accept() failed");
 
+	printf("Recieved connection from %s!", inet_ntoa(ClientAddr.sin_addr));
+
 	closesocket(ClientSock);
 	closesocket(ServerSock);
+
+	WSACleanup();
 	return(0);
 }

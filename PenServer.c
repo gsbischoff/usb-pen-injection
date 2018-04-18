@@ -46,15 +46,29 @@ main(int argc, char **argv)
 
 	printf("Recieved connection from %s!\n", inet_ntoa(ClientAddr.sin_addr));
 
-	char SendBuffer[20];
-	for(;;)
+
+	//char SendBuffer[20];
+	struct test foo = { 
+		.a = 'a',
+		.b = 'b',
+		.c = 'c',
+		.d = 'd',
+		.e = 'e',
+		.f = 'f',
+		.g = 'g',
+		.h = 'h',
+	};
+	printf("b is %c", foo.b);
+
+	send(ClientSock, (char *) &foo, sizeof(foo), 0);
+/*	for(;;)
 	{
 		memset(SendBuffer, 0, 20);
 		fgets(SendBuffer, 20, stdin);
 		SendBuffer[strlen(SendBuffer)] = '\0';
 		printf("Sending \"%s\"", SendBuffer);
 		send(ClientSock, SendBuffer, strlen(SendBuffer), 0);
-	}
+	}*/
 
 	closesocket(ClientSock);
 	closesocket(ServerSock);

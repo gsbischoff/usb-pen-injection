@@ -8,7 +8,7 @@ main(int argc, char **argv)
 	//printf("Trying macro: %d\n", GET_POINTERID_WPARAM(0));
 	int res = EnableMouseInPointer(TRUE);
 
-	printf("EnableMouseInPointer() %s\n", res ? "succeeded" : "failed");
+	printf("EnableMouseInPointer() %s\n", IsMouseInPointerEnabled() ? "succeeded" : "failed");
 
 	//printf("Trying macro: %d\n", GET_POINTERID_WPARAM(0));
 	
@@ -16,7 +16,7 @@ main(int argc, char **argv)
 
 	POINTER_DEVICE_INFO PointerDevices = { 0 };
 
-	int a;
+	UINT32 a;
 
 	if(GetPointerDevices(&a, NULL)) //NULL, &PointerDevices))
 	{

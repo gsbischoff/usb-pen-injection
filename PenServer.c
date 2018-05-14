@@ -19,7 +19,6 @@ main(int argc, char **argv)
 	ServerPort = atoi(argv[1]);
 
 	WSADATA data = { 0 };
-
 	WORD wVersionRequested = MAKEWORD(1,1);
 
 	if(WSAStartup(wVersionRequested, &data) < 0)
@@ -46,34 +45,26 @@ main(int argc, char **argv)
 
 	printf("Recieved connection from %s!\n", inet_ntoa(ClientAddr.sin_addr));
 
+	printf("Press enter to begin...\n");
 
-	//char SendBuffer[20];
-	struct test foo = { 
-		.a = 'a',
-		.b = 'b',
-		.c = 'c',
-		.d = 'd',
-		.e = 'e',
-		.f = 'f',
-		.g = 'g',
-		.h = 'h',
-	};
-	//printf("b is %c", foo.b);
-	//int bunch[SENDTEST];
-	int bunchsiz = SENDTEST * sizeof(int);
-	int *bunch = malloc(bunchsiz);
-	printf("Bunch is %d MB\n", bunchsiz / 1000000);
+	getc(stdin);
 
-	send(ClientSock, (char *) bunch, bunchsiz, 0);
-/*	for(;;)
+	POINT Last = { 0 };
+
+	for(;;)
 	{
-		memset(SendBuffer, 0, 20);
-		fgets(SendBuffer, 20, stdin);
-		SendBuffer[strlen(SendBuffer)] = '\0';
-		printf("Sending \"%s\"", SendBuffer);
-		send(ClientSock, SendBuffer, strlen(SendBuffer), 0);
-	}*/
-	free(bunch);
+		// Get current pointer info
+		POINT Point;
+		GetCursorPos(&Point);
+
+		// If the point has changed, send
+		if(Last.x != Point.x || Last.y != Point.y)
+			send(ClientSock, (char *) &Point, sizeof(POINT), 0);
+
+		// Wait a bit before repeating...
+		Sleep(33);
+	}
+
 	closesocket(ClientSock);
 	closesocket(ServerSock);
 

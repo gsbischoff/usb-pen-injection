@@ -59,20 +59,8 @@ main(int argc, char **argv)
 	}*/
 
 
-	//int bunch[SENDTEST];
-	int bunchsiz = SENDTEST * sizeof(int);
-	int *bunch = malloc(bunchsiz);
 
-//	if(recv(sock, (char *) &reciever, sizeof(reciever), 0) <= 0)
-//		DieWithError("recv() failed");
-	long long int count = 0;
-	long long int temp = 0;
-	long long int remain = bunchsiz;
-	clock_t start, end;
-	printf("Start of recieving\n");
-	start = clock();
-
-	for(;;)
+/*	for(;;)
 	{
 		if((temp = recv(sock, (char *) bunch, remain, 0)) <= 0)
 			break;
@@ -81,12 +69,7 @@ main(int argc, char **argv)
 
 		count += temp;
 		remain -= temp;
-	}
-
-	end = clock();
-
-	clock_t diff = end - start;
-	printf("Recieved %lld MB in %.2f secs.\n", count / 1000000, ((double) diff) / CLOCKS_PER_SEC);
+	}*/
 
 	free(bunch);
 	closesocket(sock);

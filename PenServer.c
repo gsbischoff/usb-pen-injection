@@ -63,12 +63,12 @@ main(int argc, char **argv)
 		if(Last.x != Point.x || Last.y != Point.y)
 		{
 			send(ClientSock, (char *) &Point, sizeof(POINT), 0);
-			printf(". ");
+			//printf(". ");
 		}
 		Last = Point;
 
 		// Wait a bit before repeating...
-		Sleep(10);
+		Sleep(1);
 	}
 
 	closesocket(ClientSock);

@@ -33,11 +33,15 @@ main(int argc, char **argv)
 	struct WSAData data = { 0 };
 	WORD wVersionRequested = MAKEWORD(1,1);
 
+	printf("1...\n");
+
 	if(WSAStartup(wVersionRequested, &data))
 		DieWithError("WSAStartup() failed");
 
 	if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 		DieWithError("sock() failed");
+
+		printf("2...\n");
 
 	memset(&ServerAddr, 0, sizeof(ServerAddr));
 	ServerAddr.sin_family		= AF_INET;
@@ -46,32 +50,22 @@ main(int argc, char **argv)
 
 	if(connect(sock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
 		DieWithError("connect() failed");
+		printf("3...\n");
 
-/*	for(;;)
+	POINT Point = { 0 };
+	printf("About to recieve...\n");
+
+	for(;;)
 	{
-		char RecvBuffer[20];
-		memset(RecvBuffer, 0, 20);
-		if(recv(sock, RecvBuffer, 20, 0) <= 0)
+		Point.x = 0;
+		Point.y = 0;
+
+		if(recv(sock, (char *) &Point, sizeof(POINT), 0) <= 0)
 			break;
 
-		RecvBuffer[19] = '\0';
-		printf("\'%s\'\n", RecvBuffer);
-	}*/
+		SetCursorPos(Point.x, Point.y)
+	}
 
-
-
-/*	for(;;)
-	{
-		if((temp = recv(sock, (char *) bunch, remain, 0)) <= 0)
-			break;
-
-		printf("Got %lld\n", temp);
-
-		count += temp;
-		remain -= temp;
-	}*/
-
-	free(bunch);
 	closesocket(sock);
 
 	WSACleanup();

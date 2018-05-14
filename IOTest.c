@@ -1,6 +1,6 @@
 #include <windows.h>
+#include <stdio.h>
 //#include <NetworkHeader.h>
-//void DieWithError(char *errorMessage);
 
 int
 main()
@@ -19,12 +19,15 @@ main()
 	while(GetCursorPos(&Point))
 	{
 		if(Last.x != Point.x || Last.y != Point.y)
-			printf("x: %d\ty: %d\n", Point.x, Point.y);
+		{
+			putc('\r', stdout);
+			fflush(stdout);
+			printf("x: %d\ty: %d\t", Point.x, Point.y);
+			//fflush(stdout);
+		}
 
-		Sleep(1);
+		Sleep(10);
 
-		//Last.x = Point.x;
-		//Last.y = Point.y;
 		Last = Point;
 	}
 

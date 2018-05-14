@@ -49,6 +49,8 @@ main(int argc, char **argv)
 
 	getc(stdin);
 
+	printf("Sending...\n");
+
 	POINT Last = { 0 };
 
 	for(;;)
@@ -59,10 +61,14 @@ main(int argc, char **argv)
 
 		// If the point has changed, send
 		if(Last.x != Point.x || Last.y != Point.y)
+		{
 			send(ClientSock, (char *) &Point, sizeof(POINT), 0);
+			printf(". ");
+		}
+		Last = Point;
 
 		// Wait a bit before repeating...
-		Sleep(33);
+		Sleep(10);
 	}
 
 	closesocket(ClientSock);

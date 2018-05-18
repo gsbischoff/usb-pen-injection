@@ -207,35 +207,7 @@ main()
 				printf("\tdwSampleRate:          %d\n", DeviceInfo.mouse.dwSampleRate);
 				printf("\tfHasHorizontalWheel:   %d\n", DeviceInfo.mouse.fHasHorizontalWheel);
 
-				// Try reopening device
-				HANDLE dev = CreateFile(Name, GENERIC_READ, FILE_SHARE_READ, NULL, 
-										OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-				if(dev == INVALID_HANDLE_VALUE)
-				{
-					printf("On CreateFile()\n");
-
-					DWORD err = GetLastError();
-					printerr(err);
-				}
-				else
-				{
-					printf("Opening device succeeded!\n");
-				}
-				// Lets try using ReadFile
-				char data[64];
-				int bytesRead = 0;
-				BOOL bResult = ReadFile(RIDeviceList[i].hDevice, data, 64, &bytesRead, NULL);
-
-				if(bResult)
-					printf("Read succeeded!\n");
-				else
-				{
-					printf("On ReadFile()\n");
-
-					DWORD err = GetLastError();
-					printerr(err);
-				}
+				
 			} break;
 
 			case RIM_TYPEKEYBOARD:
@@ -306,6 +278,38 @@ main()
 			} break;
 		}
 		putc('\n', stdout);
+
+		// Try reopening device
+		HANDLE dev = CreateFile(Name, GENERIC_READ, FILE_SHARE_READ, NULL, 
+								OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+		if(dev == INVALID_HANDLE_VALUE)
+		{
+			printf("\tOn CreateFile()\n\t");
+
+			DWORD err = GetLastError();
+			printerr(err);
+
+			dev = RIDeviceList[i].hDevice;
+		}
+		else
+		{
+			printf("\tOpening device succeeded!\n");
+		}
+		// Lets try using ReadFile
+		char data[64];
+		int bytesRead = 0;
+		BOOL bResult = ReadFile(dev, data, 64, &bytesRead, NULL);
+
+		if(bResult)
+			printf("\tRead succeeded!\n");
+		else
+		{
+			printf("\tOn ReadFile()\n\t");
+
+			DWORD err = GetLastError();
+			printerr(err);
+		}
 
 		free(Name);
 	}

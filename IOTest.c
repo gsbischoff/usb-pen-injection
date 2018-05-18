@@ -207,6 +207,21 @@ main()
 				printf("\tdwSampleRate:          %d\n", DeviceInfo.mouse.dwSampleRate);
 				printf("\tfHasHorizontalWheel:   %d\n", DeviceInfo.mouse.fHasHorizontalWheel);
 
+				// Try reopening device
+				HANDLE dev = CreateFile(Name, GENERIC_READ, FILE_SHARE_READ, NULL, 
+										OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+				if(dev == INVALID_HANDLE_VALUE)
+				{
+					printf("On CreateFile()\n");
+
+					DWORD err = GetLastError();
+					printerr(err);
+				}
+				else
+				{
+					printf("Opening device succeeded!\n");
+				}
 				// Lets try using ReadFile
 				char data[64];
 				int bytesRead = 0;
@@ -216,8 +231,9 @@ main()
 					printf("Read succeeded!\n");
 				else
 				{
-					DWORD err = GetLastError();
+					printf("On ReadFile()\n");
 
+					DWORD err = GetLastError();
 					printerr(err);
 				}
 			} break;

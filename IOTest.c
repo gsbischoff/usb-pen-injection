@@ -214,6 +214,8 @@ main()
 			} break;
 		}
 		putc('\n', stdout);
+
+		free(Name);
 	}
 
 	free(RIDeviceList);

@@ -173,7 +173,7 @@ main()
 
 	printf("NumDevices: %d\n", NumDevices);
 
-	for(int i = 0; i < 6; ++i)
+	for(int i = 0; i < NumDevices; ++i)
 	{
 		// Query name size
 		int NameSize = 0;

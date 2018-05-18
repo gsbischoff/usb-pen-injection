@@ -9,9 +9,9 @@ WindowProc(	HWND Window,
 			LPARAM LParam)
 {
 	LRESULT Result = 0;
-
+#if 0
 	printf("0x%04x\t W: %llx\tL:%llx\n", Message, WParam, LParam);
-
+#endif
 	switch(Message)
 	{
 		case WM_GETMINMAXINFO:
@@ -54,6 +54,25 @@ WindowProc(	HWND Window,
 	}
 
 	return Result;
+}
+
+void
+printerr(DWORD err)
+{
+	char *buf;
+
+	DWORD result = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM
+								|FORMAT_MESSAGE_ALLOCATE_BUFFER
+								|FORMAT_MESSAGE_IGNORE_INSERTS,
+								NULL,
+								err,
+								MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+								(LPTSTR) &buf,
+								0,
+								NULL);
+	printf("Error: %s\n", buf);
+
+	LocalFree(buf);
 }
 
 int
@@ -187,6 +206,20 @@ main()
 				printf("\tdwNumberOfButtons:     %d\n", DeviceInfo.mouse.dwNumberOfButtons);
 				printf("\tdwSampleRate:          %d\n", DeviceInfo.mouse.dwSampleRate);
 				printf("\tfHasHorizontalWheel:   %d\n", DeviceInfo.mouse.fHasHorizontalWheel);
+
+				// Lets try using ReadFile
+				char data[64];
+				int bytesRead = 0;
+				BOOL bResult = ReadFile(RIDeviceList[i].hDevice, data, 64, &bytesRead, NULL);
+
+				if(bResult)
+					printf("Read succeeded!\n");
+				else
+				{
+					DWORD err = GetLastError();
+
+					printerr(err);
+				}
 			} break;
 
 			case RIM_TYPEKEYBOARD:

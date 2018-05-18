@@ -1,0 +1,152 @@
+NumDevices: 21
+Device 0 is a HID
+	NAME:              \\?\HID#MSHW0037&Col05#5&1e5aaba3&0&0004#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       6916
+	dwVersionNumber:   1
+	usUsagePage:       65291
+	usUsage:           12
+
+Device 1 is a HID
+	NAME:              \\?\HID#MSHW0037&Col04#5&1e5aaba3&0&0003#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       6916
+	dwVersionNumber:   1
+	usUsagePage:       65292
+	usUsage:           13
+
+Device 2 is a MOUSE
+	NAME:                  \\?\HID#MSHW0037&Col03#5&1e5aaba3&0&0002#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+	dwId:                  128
+	dwNumberOfButtons:     2
+	dwSampleRate:          0
+	fHasHorizontalWheel:   0
+
+Device 3 is a HID
+	NAME:              \\?\HID#VID_045E&PID_07DE&Col07#6&251fe124&0&0006#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       0
+	dwVersionNumber:   0
+	usUsagePage:       0
+	usUsage:           0
+
+Device 4 is a HID
+	NAME:              \\?\HID#VID_045E&PID_07DE&Col04#6&251fe124&0&0003#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       2014
+	dwVersionNumber:   775
+	usUsagePage:       65285
+	usUsage:           1
+
+Device 5 is a MOUSE
+	NAME:                  \\?\HID#VID_045E&PID_07DE&Col02#6&251fe124&0&0001#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+	dwId:                  256
+	dwNumberOfButtons:     5
+	dwSampleRate:          0
+	fHasHorizontalWheel:   0
+
+Device 6 is a KEYBOARD
+	NAME:                     \\?\HID#VID_045E&PID_07DE&Col01#6&251fe124&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+	dwType:                   4
+	dwSubType:                0
+	dwKeyboardMode:           1
+	dwNumberOfFunctionKeys:   12
+	dwNumberOfIndicators:     3
+	dwNumberOfKeysTotal:      154
+
+Device 7 is a HID
+	NAME:              \\?\HID#MSHW0037&Col07#5&1e5aaba3&0&0006#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       6916
+	dwVersionNumber:   1
+	usUsagePage:       65295
+	usUsage:           80
+
+Device 8 is a HID
+	NAME:              \\?\HID#MSHW0037&Col02#5&1e5aaba3&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       6916
+	dwVersionNumber:   1
+	usUsagePage:       13
+	usUsage:           4
+
+Device 9 is a HID
+	NAME:              \\?\HID#MSHW0037&Col01#5&1e5aaba3&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       6916
+	dwVersionNumber:   1
+	usUsagePage:       13
+	usUsage:           2
+
+Device 10 is a HID
+	NAME:              \\?\HID#VID_045E&PID_07DE&Col0A#6&251fe124&0&0009#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       2014
+	dwVersionNumber:   775
+	usUsagePage:       65285
+	usUsage:           80
+
+Device 11 is a HID
+	NAME:              \\?\HID#VID_045E&PID_07DE&Col09#6&251fe124&0&0008#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       2014
+	dwVersionNumber:   775
+	usUsagePage:       65285
+	usUsage:           4
+
+Device 12 is a HID
+	NAME:              \\?\HID#VID_045E&PID_07DE&Col08#6&251fe124&0&0007#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       2014
+	dwVersionNumber:   775
+	usUsagePage:       65287
+	usUsage:           1
+
+Device 13 is a HID
+	NAME:              \\?\HID#VID_045E&PID_07DE&Col06#6&251fe124&0&0005#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       2014
+	dwVersionNumber:   775
+	usUsagePage:       13
+	usUsage:           5
+
+Device 14 is a HID
+	NAME:              \\?\HID#VID_045E&PID_07DE&Col03#6&251fe124&0&0002#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       2014
+	dwVersionNumber:   775
+	usUsagePage:       12
+	usUsage:           1
+
+Device 15 is a HID
+	NAME:              \\?\HID#VEN_MSHW&DEV_0102&SUBSYS_MSHWTSAM&REV_100CD14&Col04#5&278d04da&0&0003#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       1981
+	dwVersionNumber:   3
+	usUsagePage:       65284
+	usUsage:           80
+
+Device 16 is a HID
+	NAME:              \\?\HID#VEN_MSHW&DEV_0102&SUBSYS_MSHWTSAM&REV_100CD14&Col03#5&278d04da&0&0002#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       1981
+	dwVersionNumber:   3
+	usUsagePage:       65284
+	usUsage:           2
+
+Device 17 is a HID
+	NAME:              \\?\HID#VEN_MSHW&DEV_0102&SUBSYS_MSHWTSAM&REV_100CD14&Col02#5&278d04da&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       1981
+	dwVersionNumber:   3
+	usUsagePage:       65284
+	usUsage:           1
+
+Device 18 is a HID
+	NAME:              \\?\HID#PNP0C40&Col02#3&f13500c&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       0
+	dwVersionNumber:   0
+	usUsagePage:       12
+	usUsage:           1
+
+Device 19 is a HID
+	NAME:              \\?\HID#VID_045E&PID_07DE&Col06#6&251fe124&0&0005#{4d1e55b2-f16f-11cf-88cb-001111000030}
+	dwProductId:       2014
+	dwVersionNumber:   775
+	usUsagePage:       13
+	usUsage:           5
+
+Device 20 is a KEYBOARD
+	NAME:                     \\?\HID#PNP0C40&Col01#3&f13500c&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+	dwType:                   81
+	dwSubType:                0
+	dwKeyboardMode:           1
+	dwNumberOfFunctionKeys:   12
+	dwNumberOfIndicators:     3
+	dwNumberOfKeysTotal:      8
+

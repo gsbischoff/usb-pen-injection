@@ -50,24 +50,23 @@ main()
 				if(RIDeviceList[i].dwType == RIM_TYPEMOUSE)
 					NumMice++;
 
-			RAWINPUTDEVICE RID[2] = {0};
+			RAWINPUTDEVICE RID[1] = {0};
 
-			HWND Console = GetConsoleWindow();
+			// Mouse
+			// RID[1].usUsagePage = 0x1;
+			// RID[1].usUsage = 0x2;
+			// RID[1].dwFlags = RIDEV_INPUTSINK; // hwnd MUST be specified
+			// RID[1].hwndTarget = WindowHandle;
 
 			// Usage page & usage of Pointer
 			RID[0].usUsagePage = 0x1;
-			RID[0].usUsage = 0x1;
+			RID[0].usUsage = 0x2;	// mouse : 0x2, pointer: 0x1
 			RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
 			RID[0].hwndTarget = WindowHandle;
 
-			// Mouse
-			RID[1].usUsagePage = 0x1;
-			RID[1].usUsage = 0x2;
-			RID[1].dwFlags = RIDEV_INPUTSINK; // hwnd MUST be specified
-			RID[1].hwndTarget = WindowHandle;
 
 			BOOL Result;
-			Result = RegisterRawInputDevices(RID, 2, sizeof(RAWINPUTDEVICE));
+			Result = RegisterRawInputDevices(RID, 1, sizeof(RAWINPUTDEVICE));
 
 			if(!Result)
 			{
@@ -83,7 +82,6 @@ main()
 				BOOL MessageResult = GetMessage(&Message, 0, 0, 0);
 				if(MessageResult > 0)
 				{
-					
 					TranslateMessage(&Message);
 					DispatchMessage(&Message);
 				}
@@ -118,7 +116,31 @@ WindowProc(	HWND Window,
 		case WM_INPUT:
 		{
 			//MINMAXINFO Info = LParam;
-			printf(".");
+			//printf(".");
+			// Get the header
+			RAWINPUTHEADER Header = {0};
+			int HeaderSize = sizeof(RAWINPUTHEADER);
+			GetRawInputData((HRAWINPUT) LParam, RID_HEADER, &Header, &HeaderSize, HeaderSize);
+
+			int size;
+			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
+
+
+			// Get mouse messages
+			if(Header.dwType == RIM_TYPEMOUSE)
+			{
+				// Fill in that data
+				RAWMOUSE *Input = calloc(1, size);
+				int rv = GetRawInputData((HRAWINPUT) LParam, RID_INPUT, Input, &size, sizeof(RAWINPUTHEADER));
+
+				// Print out the data all pretty
+				printf("\r");
+				printf("Buttons: %04x\t(%08x,%08x)\t%08x", Input->ulRawButtons, Input->lLastX, Input->lLastY, Input->ulExtraInformation);
+				fflush(stdout);
+
+				free(Input);
+			}
+
 			Result = DefWindowProc(Window, Message, WParam, LParam);
 		} break;
 

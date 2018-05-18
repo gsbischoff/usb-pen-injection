@@ -260,6 +260,49 @@ main()
 				printf("\tdwVersionNumber:   %d\n", DeviceInfo.hid.dwVersionNumber);
 				printf("\tusUsagePage:       %d\n", DeviceInfo.hid.usUsagePage);
 				printf("\tusUsage:           %d\n", DeviceInfo.hid.usUsage);
+
+				switch(DeviceInfo.hid.usUsage)
+				{
+					case 0x1:
+					{
+						printf("\tDevice Type:       %s\n", DeviceInfo.hid.usUsagePage == 0x1 ? "Pointer" : "Consumer Audio Control");
+					} break;
+
+					case 0x2:
+					{
+						printf("\tDevice Type:       %s\n", "Mouse");
+					} break;
+
+					case 0x3:
+					{
+						printf("\tDevice Type:       %s\n", "Joystick");
+					} break;
+
+					case 0x4:
+					{
+						printf("\tDevice Type:       %s\n", "Gamepad");
+					} break;
+
+					case 0x5:
+					{
+						printf("\tDevice Type:       %s\n", "Keyboard");
+					} break;
+
+					case 0x7:
+					{
+						printf("\tDevice Type:       %s\n", "Keypad");
+					} break;
+
+					case 0x80:
+					{
+						printf("\tDevice Type:       %s\n", "System Control");
+					} break;
+
+					default:
+					{
+						printf("\tDevice Type:       ?\n", "");
+					} break;
+				}
 			} break;
 		}
 		putc('\n', stdout);

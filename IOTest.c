@@ -149,19 +149,6 @@ main()
 	{
 		printf("Failed to register window!\n");
 	}
-#elif 0
-	puts("Here!\n");
-	HWND ConsoleWindow = GetConsoleWindow();
-	puts("After!\n");
-	for(;;)
-	{
-		MSG Msg;
-		if(GetMessage(&Msg, ConsoleWindow, 0, 0))
-			printf("Got message!\n");
-		else
-			printf("No messages\n");
-		Sleep(500);
-	}
 #else
 	// Query number of RIDs
 	int NumDevices = 0;

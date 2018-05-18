@@ -103,7 +103,7 @@ main()
 
 		Last = Point;
 	}
-#elif 0
+#elif 1
 	UINT32 deviceCount;
 
 	if(GetPointerDevices(&deviceCount, 0) == 0)
@@ -136,13 +136,81 @@ main()
 											0,
 											GetModuleHandle(0),
 											0);
+											
 		if(WindowHandle)
 		{
+			printf("Window handle valid!\n");
+			/*
 			if(ShowWindow(WindowHandle, SW_HIDE))
 				printf("Window Hidden!\n");
 			else
 				printf("Window... not hidden\n");
+			*/
 
+			//Try to get mouse RI
+			int NumDevices;
+			GetRawInputDeviceList(NULL, &NumDevices, sizeof(RAWINPUTDEVICELIST));
+
+			RAWINPUTDEVICELIST *RIDeviceList = malloc(NumDevices * sizeof(RAWINPUTDEVICELIST));
+			GetRawInputDeviceList(RIDeviceList, &NumDevices, sizeof(RAWINPUTDEVICELIST));
+
+			// Count number of decives [specifcally mice] to add
+			int NumMice = 0;
+			for(int i = 0; i < NumDevices; ++i)
+				if(RIDeviceList[i].dwType == RIM_TYPEMOUSE)
+					NumMice++;
+
+			RAWINPUTDEVICE RID[2] = {0};
+
+			HWND Console = GetConsoleWindow();
+
+			// Usage page & usage of Pointer
+			RID[0].usUsagePage = 0x1;
+			RID[0].usUsage = 0x1;
+			RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
+			RID[0].hwndTarget = WindowHandle;
+
+			// Mouse
+			RID[1].usUsagePage = 0x1;
+			RID[1].usUsage = 0x2;
+			RID[1].dwFlags = RIDEV_INPUTSINK; // hwnd MUST be specified
+			RID[1].hwndTarget = WindowHandle;
+
+			BOOL Result;
+			Result = RegisterRawInputDevices(RID, 2, sizeof(RAWINPUTDEVICE));
+
+			if(!Result)
+			{
+				printf("Registering the RIDs failed!\n");
+				DWORD err = GetLastError();
+
+				printerr(err);
+			}
+
+			//RAWINPUTDEVICE *RIDevs = malloc(NumMice * sizeof(RAWINPUTDEVICE));
+
+			// Add all mouses ONLY [loop through devices and only add mice]
+			/*int i = 0;
+			for(int j = 0; i < NumDevices; ++i)
+			{
+				if(RIDeviceList[i].dwType == RIM_TYPEMOUSE)
+				{
+					RID_DEVICE_INFO Info = {0};
+					Info.cbSize = sizeof(RID_DEVICE_INFO);
+					int size = sizeof(RID_DEVICE_INFO);
+
+					// Query the extended info of this mouse
+					GetRawInputDeviceInfo(RIDeviceList[i].hDevice, RIDI_DEVICEINFO, &Info, &size);
+
+					// Fill in the device info to register with these values we got
+					RIDevs[i].usUsagePage = 0;
+					RIDevs[i].usUsage = 0;
+					RIDevs[i].dwFlags = 0;
+					RIDevs[i].hwndTarget = 0;
+
+					i++;
+				}
+			}*/
 			MSG Message;
 			for(;;)
 			{

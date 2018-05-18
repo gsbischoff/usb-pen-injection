@@ -10,7 +10,7 @@ WindowProc(	HWND Window,
 {
 	LRESULT Result = 0;
 
-	printf("0x%04x\t W: %x\tL:%x\n", Message, WParam, LParam);
+	printf("0x%04x\t W: %llx\tL:%llx\n", Message, WParam, LParam);
 
 	switch(Message)
 	{
@@ -84,7 +84,7 @@ main()
 
 		Last = Point;
 	}
-#else
+#elif 0
 	UINT32 deviceCount;
 
 	if(GetPointerDevices(&deviceCount, 0) == 0)
@@ -149,16 +149,87 @@ main()
 	{
 		printf("Failed to register window!\n");
 	}
-
+#elif 0
+	puts("Here!\n");
+	HWND ConsoleWindow = GetConsoleWindow();
+	puts("After!\n");
 	for(;;)
 	{
 		MSG Msg;
-		if(PeekMessage(&Msg, NULL, 0, 0, PM_NOREMOVE))
+		if(GetMessage(&Msg, ConsoleWindow, 0, 0))
 			printf("Got message!\n");
 		else
 			printf("No messages\n");
 		Sleep(500);
 	}
+#else
+	// Query number of RIDs
+	int NumDevices = 0;
+	GetRawInputDeviceList(NULL, &NumDevices, sizeof(RAWINPUTDEVICELIST));
+
+	// Make an appropriately-sized array of structures and fill them in
+	RAWINPUTDEVICELIST *RIDeviceList = calloc(NumDevices, sizeof(RAWINPUTDEVICELIST));
+	GetRawInputDeviceList(RIDeviceList, &NumDevices, sizeof(RAWINPUTDEVICELIST));
+
+	printf("NumDevices: %d\n", NumDevices);
+
+	for(int i = 0; i < 6; ++i)
+	{
+		// Query name size
+		int NameSize = 0;
+		GetRawInputDeviceInfo(RIDeviceList[i].hDevice, RIDI_DEVICENAME, NULL, &NameSize);
+
+		// Make enough spacee for the name string and retrieve it
+		char *Name = malloc(NameSize);
+		GetRawInputDeviceInfo(RIDeviceList[i].hDevice, RIDI_DEVICENAME, Name, &NameSize);
+
+		// Fill in RID_DEVICE_INFO struct
+		RID_DEVICE_INFO DeviceInfo = {0};
+		int RIDI_size = sizeof(RID_DEVICE_INFO);
+		GetRawInputDeviceInfo(RIDeviceList[i].hDevice, RIDI_DEVICEINFO, &DeviceInfo, &RIDI_size);
+
+		printf("Device %d is a ", i);
+		switch(RIDeviceList[i].dwType)
+		{
+			case RIM_TYPEMOUSE:
+			{
+				printf("MOUSE\n");
+				printf("\tNAME:                  %s\n", Name);
+
+				printf("\tdwId:                  %d\n", DeviceInfo.mouse.dwId);
+				printf("\tdwNumberOfButtons:     %d\n", DeviceInfo.mouse.dwNumberOfButtons);
+				printf("\tdwSampleRate:          %d\n", DeviceInfo.mouse.dwSampleRate);
+				printf("\tfHasHorizontalWheel:   %d\n", DeviceInfo.mouse.fHasHorizontalWheel);
+			} break;
+
+			case RIM_TYPEKEYBOARD:
+			{
+				printf("KEYBOARD\n");
+				printf("\tNAME:                     %s\n", Name);
+
+				printf("\tdwType:                   %d\n", DeviceInfo.keyboard.dwType);
+				printf("\tdwSubType:                %d\n", DeviceInfo.keyboard.dwSubType);
+				printf("\tdwKeyboardMode:           %d\n", DeviceInfo.keyboard.dwKeyboardMode);
+				printf("\tdwNumberOfFunctionKeys:   %d\n", DeviceInfo.keyboard.dwNumberOfFunctionKeys);
+				printf("\tdwNumberOfIndicators:     %d\n", DeviceInfo.keyboard.dwNumberOfIndicators);
+				printf("\tdwNumberOfKeysTotal:      %d\n", DeviceInfo.keyboard.dwNumberOfKeysTotal);
+			} break;
+			
+			default:	// RIM_TYPEHID
+			{
+				printf("HID\n");
+				printf("\tNAME:              %s\n", Name);
+
+				printf("\tdwProductId:       %d\n", DeviceInfo.hid.dwProductId);
+				printf("\tdwVersionNumber:   %d\n", DeviceInfo.hid.dwVersionNumber);
+				printf("\tusUsagePage:       %d\n", DeviceInfo.hid.usUsagePage);
+				printf("\tusUsage:           %d\n", DeviceInfo.hid.usUsage);
+			} break;
+		}
+		putc('\n', stdout);
+	}
+
+	free(RIDeviceList);
 #endif
 	return(0);
 }

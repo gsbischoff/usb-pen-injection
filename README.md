@@ -1,9 +1,9 @@
 # USB Pen Injection
 
-Use the Windows API to slave the input of a pressure sensitive stylus from a Microsoft Surface and pipe it
+Uses the Windows API to slave the input of a pressure sensitive stylus from a Microsoft Surface and pipe it
 over USB (or some other protocol) for input on a separate computer without a touch display. (Work-In-Progress)
 
-The initial implementation uses the sockets API (with Winsock).
+The initial implementation uses the sockets API (with Winsock). USB or Bluetooth to come later.
 
 ## Contents
 
@@ -13,14 +13,14 @@ The initial implementation uses the sockets API (with Winsock).
 
 ## Building
 
-The client and server are built similarly
+The client and server are built similarly to each other:
 
 ```bash
 build.bat PenClient.c
 build.bat PenServer.c
 ```
 
-The test file has different dependencies that I've seperated into a seperate build script
+The test file has different dependencies that I've seperated into a seperate build script:
 
 ```bash
 build1.bat IOTest.c

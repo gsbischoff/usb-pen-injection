@@ -162,7 +162,7 @@ WindowProc(	HWND Window,
 			// We have the info as RI, we can create a raw handle to it by
 			// using the function GlobalAlloc
 
-			HGLOBAL HRI = GlobalAlloc(GHND, InputSize);
+/*			HGLOBAL HRI = GlobalAlloc(GHND, InputSize);
 
 			// Accesses the memory of this handle so we can initialize it
 			RAWINPUT *pRI = GlobalLock(HRI);
@@ -174,16 +174,23 @@ WindowProc(	HWND Window,
 				memcpy(pRI, RI, InputSize);
 			}
 
-			GlobalUnlock(HRI);
+			GlobalUnlock(HRI);*/
+
+			RAWINPUT *Rawtest = malloc(InputSize); // = malloc(InputSize);
+			memcpy(Rawtest, RI, InputSize);
+			HRAWINPUT HRI = (HRAWINPUT) GlobalHandle(Rawtest);
 
 			// Try using our new handle!
-			RAWINPUT *Rawtest = malloc(InputSize); // = malloc(InputSize);
-			GetRawInputData((HRAWINPUT) HRI, RID_INPUT, Rawtest, &InputSize, sizeof(RAWINPUTHEADER));
+			RAWINPUT *Rooty = malloc(InputSize);
+			if(HRI)
+				GetRawInputData((HRAWINPUT) HRI, RID_INPUT, Rooty, &InputSize, sizeof(RAWINPUTHEADER));
+			else
+				printf("DIDNT WORK\n\n");
 
 			GlobalFree(HRI);
 			
 			char *raw = (char *) RI;
-			char *raw2 = (char *) Rawtest;
+			char *raw2 = (char *) Rooty;
 			switch(RI->header.dwType)
 			{
 				case RIM_TYPEHID:

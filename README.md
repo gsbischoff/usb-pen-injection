@@ -22,9 +22,9 @@ build.bat PenClient.c
 build.bat PenServer.c
 ```
 
-The test files have different dependencies that I've seperated into a seperate build script:
+The test files have different dependencies that I've seperated into a seperate build script placed in their own directory:
 
 ```bash
-build1.bat IOTest.c
-build1.bat IOFinal.c
+build.bat IOTest.c
+build.bat IOFinal.c
 ```

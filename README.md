@@ -28,3 +28,11 @@ The test files have different dependencies that I've seperated into a seperate b
 build.bat IOTest.c
 build.bat IOFinal.c
 ```
+
+### Notes/Current Issues
+
+* **WM_INPUT** messeges can be recieved from a pen arbitrarily with INPUTSINK attribute while registering the Ri device -- however, once the RAWINPUT structure is returned from GetRawInputData(), we cannot place it back into a handle (using GlobalAlloc() or GlobalHandle()) to reinject into another context. Ideas:
+
+ * Try examining the HRAWINPUT of LPARAM to see if we can figure out how it is different from those we can make with the Global memory management functions.
+
+ * Switch to using Pointer messeges (can we capture all messeges still as with INPUTSINK? Register pointers?)

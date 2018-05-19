@@ -1,4 +1,5 @@
 #include "NetworkHeader.h"
+#include "PenIO.h"
 
 // -----
 //   PenServer.c

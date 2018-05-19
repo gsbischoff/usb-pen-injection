@@ -18,20 +18,22 @@ main()
 
 	if(RegisterClass(&WindowClass))
 	{
-		printf("Successful registering window class!\n");
+		printf("Successfully registered window class!\n");
 
-		HWND WindowHandle = CreateWindowEx(WS_EX_TRANSPARENT,
-											WindowClass.lpszClassName,
-											"Dummy",
-											WS_OVERLAPPEDWINDOW,// | WS_VISIBLE,
-											CW_USEDEFAULT,
-											CW_USEDEFAULT,
-											CW_USEDEFAULT,
-											CW_USEDEFAULT,
-											0,
-											0,
-											GetModuleHandle(0),
-											0);
+		HWND WindowHandle = 
+			CreateWindowEx(
+				WS_EX_TRANSPARENT,
+				WindowClass.lpszClassName,
+				"Dummy",
+				WS_OVERLAPPEDWINDOW,// | WS_VISIBLE,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				0,
+				0,
+				GetModuleHandle(0),
+				0);
 
 		if(WindowHandle)
 		{
@@ -60,7 +62,7 @@ main()
 
 			// Usage page & usage of Pointer
 			RID[0].usUsagePage = 0x1;
-			RID[0].usUsage = 0x2;	// mouse : 0x2, pointer: 0x1
+			RID[0].usUsage = 0x1;	// mouse : 0x2, pointer: 0x1
 			RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
 			RID[0].hwndTarget = WindowHandle;
 
@@ -118,6 +120,7 @@ WindowProc(	HWND Window,
 			//MINMAXINFO Info = LParam;
 			//printf(".");
 			// Get the header
+			/*
 			RAWINPUTHEADER Header = {0};
 			int HeaderSize = sizeof(RAWINPUTHEADER);
 			GetRawInputData((HRAWINPUT) LParam, RID_HEADER, &Header, &HeaderSize, HeaderSize);
@@ -139,13 +142,39 @@ WindowProc(	HWND Window,
 				fflush(stdout);
 
 				free(Input);
-			}
+			}*/
+			//res = GetRawInputData((HRAWINPUT) LParam, RID_INPUT, NULL, &InputSize, sizeof(RAWINPUTHEADER));
 
+			int InputSize = sizeof(RAWINPUT);
+			RAWINPUT RI = {0}; // = malloc(InputSize);
+			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, &RI, &InputSize, sizeof(RAWINPUTHEADER));
+			//printf("Sizeof: %zd\n", sizeof(RAWINPUT));
+
+			//RI.mouse.;
+
+			/*char *pRI = (char *) &RI;
+			for(int i = 0; i < sizeof(RAWINPUT); ++i)
+			{
+				printf("%02x", (unsigned char) pRI[i]);
+			}*/
+			printf("RawInput!\n");
+
+			Result = DefWindowProc(Window, Message, WParam, LParam);
+		} break;
+
+		case WM_POINTERUPDATE:
+		{
+			//GetPointer
+			printf("Pointer input!\n");
 			Result = DefWindowProc(Window, Message, WParam, LParam);
 		} break;
 
 		default:
 		{
+			//if(Message >= WM_NCPOINTERUPDATE 
+			//   Message <= WM_POINTERROUTEDRELEASED)
+			//{
+			//}
 			Result = DefWindowProc(Window, Message, WParam, LParam);
 		} break;
 	}

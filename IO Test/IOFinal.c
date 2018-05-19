@@ -7,7 +7,7 @@ LRESULT CALLBACK
 WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam);
 
 int
-main()
+main(int argc, char **argv)
 {
 	WNDCLASS WindowClass = {0};
 
@@ -46,28 +46,50 @@ main()
 			RAWINPUTDEVICELIST *RIDeviceList = malloc(NumDevices * sizeof(RAWINPUTDEVICELIST));
 			GetRawInputDeviceList(RIDeviceList, &NumDevices, sizeof(RAWINPUTDEVICELIST));
 
-			// Count number of decives [specifcally mice] to add
-			int NumMice = 0;
-			for(int i = 0; i < NumDevices; ++i)
-				if(RIDeviceList[i].dwType == RIM_TYPEMOUSE)
-					NumMice++;
+			// Add the nth HID
+			int HIDIndex = 16; // 16 is my pointer
+
+			if(argc == 2)
+			{
+				HIDIndex = atoi(argv[1]);
+				printf("Got a device index of %d...\n", HIDIndex);
+			}
+			int HIDNum = 0;
 
 			RAWINPUTDEVICE RID[1] = {0};
 
-			// Mouse
-			// RID[1].usUsagePage = 0x1;
-			// RID[1].usUsage = 0x2;
-			// RID[1].dwFlags = RIDEV_INPUTSINK; // hwnd MUST be specified
-			// RID[1].hwndTarget = WindowHandle;
+			RID_DEVICE_INFO RIDI[1] = {0};
+			UINT InfoStructSize = sizeof(RID_DEVICE_INFO);
+			for(int i = 0; i < NumDevices; ++i)
+			{
+				if(RIDeviceList[i].dwType == RIM_TYPEHID)
+				{
+
+					if(i == HIDIndex)
+					{
+						UINT res = GetRawInputDeviceInfo(RIDeviceList[i].hDevice, RIDI_DEVICEINFO, RIDI, &InfoStructSize);
+						if(res <= 0)
+							continue;
+
+						printf("RID set!\n");
+						RID[0].usUsagePage = RIDI[0].hid.usUsagePage;
+						RID[0].usUsage = RIDI[0].hid.usUsage;	// mouse : 0x2, pointer: 0x1
+						RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
+						RID[0].hwndTarget = WindowHandle;
+					}
+				}
+			}
+
+			free(RIDeviceList);
 
 			// Usage page & usage of Pointer
-			RID[0].usUsagePage = 0x1;
-			RID[0].usUsage = 0x1;	// mouse : 0x2, pointer: 0x1
-			RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
-			RID[0].hwndTarget = WindowHandle;
+			// RID[0].usUsagePage = 0x1;
+			// RID[0].usUsage = 0x2;	// mouse : 0x2, pointer: 0x1
+			// RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
+			// RID[0].hwndTarget = WindowHandle;
 
 
-			BOOL Result;
+			BOOL Result = TRUE;
 			Result = RegisterRawInputDevices(RID, 1, sizeof(RAWINPUTDEVICE));
 
 			if(!Result)
@@ -84,6 +106,8 @@ main()
 				BOOL MessageResult = GetMessage(&Message, 0, 0, 0);
 				if(MessageResult > 0)
 				{
+					//printf("RIDI[0] usagepage %d, usage %d\n", RIDI[0].hid.usUsagePage, RIDI[0].hid.usUsage);
+					// Page 13, Usage 2
 					TranslateMessage(&Message);
 					DispatchMessage(&Message);
 				}
@@ -127,37 +151,44 @@ WindowProc(	HWND Window,
 
 			int size;
 			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
+*/
 
+			int InputSize;
+			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, NULL, &InputSize, sizeof(RAWINPUTHEADER));
 
-			// Get mouse messages
-			if(Header.dwType == RIM_TYPEMOUSE)
+			RAWINPUT *RI = malloc(InputSize); // = malloc(InputSize);
+			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, RI, &InputSize, sizeof(RAWINPUTHEADER));
+			
+			char *raw = (char *) RI;
+			switch(RI->header.dwType)
 			{
-				// Fill in that data
-				RAWMOUSE *Input = calloc(1, size);
-				int rv = GetRawInputData((HRAWINPUT) LParam, RID_INPUT, Input, &size, sizeof(RAWINPUTHEADER));
+				case RIM_TYPEHID:
+				{
+					for(int i = 0; i < InputSize; ++i)
+						printf("%02x", raw[i]);
+					//printf("HID");
+				} break;
 
-				// Print out the data all pretty
-				printf("\r");
-				printf("Buttons: %04x\t(%08x,%08x)\t%08x", Input->ulRawButtons, Input->lLastX, Input->lLastY, Input->ulExtraInformation);
-				fflush(stdout);
+				case RIM_TYPEKEYBOARD:
+				{
+					printf("KEYBOARD");
+				} break;
 
-				free(Input);
-			}*/
-			//res = GetRawInputData((HRAWINPUT) LParam, RID_INPUT, NULL, &InputSize, sizeof(RAWINPUTHEADER));
+				default:
+				{
+					printf("MOUSE");
+				} break;
+			}
 
-			int InputSize = sizeof(RAWINPUT);
-			RAWINPUT RI = {0}; // = malloc(InputSize);
-			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, &RI, &InputSize, sizeof(RAWINPUTHEADER));
-			//printf("Sizeof: %zd\n", sizeof(RAWINPUT));
-
-			//RI.mouse.;
-
+			printf("\t\t");
+			printf("\r");
+			fflush(stdout);
 			/*char *pRI = (char *) &RI;
 			for(int i = 0; i < sizeof(RAWINPUT); ++i)
 			{
 				printf("%02x", (unsigned char) pRI[i]);
 			}*/
-			printf("RawInput!\n");
+			//printf("RawInput!\n");
 
 			Result = DefWindowProc(Window, Message, WParam, LParam);
 		} break;
@@ -171,10 +202,6 @@ WindowProc(	HWND Window,
 
 		default:
 		{
-			//if(Message >= WM_NCPOINTERUPDATE 
-			//   Message <= WM_POINTERROUTEDRELEASED)
-			//{
-			//}
 			Result = DefWindowProc(Window, Message, WParam, LParam);
 		} break;
 	}

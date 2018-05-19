@@ -39,55 +39,13 @@ main(int argc, char **argv)
 		{
 			printf("Window handle valid!\n");
 
-			//Try to get mouse RI
-			int NumDevices;
-			GetRawInputDeviceList(NULL, &NumDevices, sizeof(RAWINPUTDEVICELIST));
-
-			RAWINPUTDEVICELIST *RIDeviceList = malloc(NumDevices * sizeof(RAWINPUTDEVICELIST));
-			GetRawInputDeviceList(RIDeviceList, &NumDevices, sizeof(RAWINPUTDEVICELIST));
-
-			// Add the nth HID
-			int HIDIndex = 16; // 16 is my pointer
-
-			if(argc == 2)
-			{
-				HIDIndex = atoi(argv[1]);
-				printf("Got a device index of %d...\n", HIDIndex);
-			}
-			int HIDNum = 0;
-
 			RAWINPUTDEVICE RID[1] = {0};
-
-			RID_DEVICE_INFO RIDI[1] = {0};
-			UINT InfoStructSize = sizeof(RID_DEVICE_INFO);
-			for(int i = 0; i < NumDevices; ++i)
-			{
-				if(RIDeviceList[i].dwType == RIM_TYPEHID)
-				{
-
-					if(i == HIDIndex)
-					{
-						UINT res = GetRawInputDeviceInfo(RIDeviceList[i].hDevice, RIDI_DEVICEINFO, RIDI, &InfoStructSize);
-						if(res <= 0)
-							continue;
-
-						printf("RID set!\n");
-						RID[0].usUsagePage = RIDI[0].hid.usUsagePage;
-						RID[0].usUsage = RIDI[0].hid.usUsage;	// mouse : 0x2, pointer: 0x1
-						RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
-						RID[0].hwndTarget = WindowHandle;
-					}
-				}
-			}
-
-			free(RIDeviceList);
-
-			// Usage page & usage of Pointer
-			// RID[0].usUsagePage = 0x1;
-			// RID[0].usUsage = 0x2;	// mouse : 0x2, pointer: 0x1
-			// RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
-			// RID[0].hwndTarget = WindowHandle;
-
+			
+			// Usage page & usage of Mouse
+			RID[0].usUsagePage = 0x1;
+			RID[0].usUsage = 0x2; // mouse : 0x2, pointer: 0x1
+			RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
+			RID[0].hwndTarget = WindowHandle;
 
 			BOOL Result = TRUE;
 			Result = RegisterRawInputDevices(RID, 1, sizeof(RAWINPUTDEVICE));
@@ -107,7 +65,8 @@ main(int argc, char **argv)
 				if(MessageResult > 0)
 				{
 					//printf("RIDI[0] usagepage %d, usage %d\n", RIDI[0].hid.usUsagePage, RIDI[0].hid.usUsage);
-					// Page 13, Usage 2
+					// Page 13, Usage 2 [surface ptr]
+					printf("Got stuff!\n");
 					TranslateMessage(&Message);
 					DispatchMessage(&Message);
 				}
@@ -141,66 +100,73 @@ WindowProc(	HWND Window,
 	{
 		case WM_INPUT:
 		{
-			//MINMAXINFO Info = LParam;
-			//printf(".");
-			// Get the header
-			/*
-			RAWINPUTHEADER Header = {0};
-			int HeaderSize = sizeof(RAWINPUTHEADER);
-			GetRawInputData((HRAWINPUT) LParam, RID_HEADER, &Header, &HeaderSize, HeaderSize);
-
-			int size;
-			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
-*/
-
+			// Find out size of input
 			int InputSize;
 			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, NULL, &InputSize, sizeof(RAWINPUTHEADER));
 
+			// Allocate and fill in a RAWINPUT struct of that size
 			RAWINPUT *RI = malloc(InputSize); // = malloc(InputSize);
 			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, RI, &InputSize, sizeof(RAWINPUTHEADER));
 
 			// We have the info as RI, we can create a raw handle to it by
 			// using the function GlobalAlloc
 
-/*			HGLOBAL HRI = GlobalAlloc(GHND, InputSize);
+			// GlobalAlloc(GHND, InputSize) and GlobalHandle(void *) both return handles
+			// GlobalLock(HGLOBAL h) returns the memory of the handle
+			// GlobalHandle(HGLOBAL h) locks back up that memory
 
-			// Accesses the memory of this handle so we can initialize it
-			RAWINPUT *pRI = GlobalLock(HRI);
-
-			// Initialize our handle's memory with our Rawinput data
-			if(pRI)
+			if(1)
 			{
-				//printf("Handle gave back memory!\n");
-				memcpy(pRI, RI, InputSize);
+				printf("In test!\n");
+				HRAWINPUT param = (HRAWINPUT) LParam;
+				RAWINPUT *maybe = GlobalLock(param);
+
+				if(!maybe)
+				{
+					DWORD err = GetLastError();
+					printerr(err);
+
+					//RAWINPUT *maybe2 = LocalLock(param);
+
+					if(!HeapLock(param))
+					{
+						DWORD err2 = GetLastError();
+						printerr(err2);
+
+					}
+
+				}
+				else
+				{
+					char *m = (char *) maybe;
+
+					printf("STILL in test!\n");
+
+					for(int i = 0; i < InputSize; ++i)
+						printf("%02x", m[i]);
+				}
+
+
+				printf("End test!\n");
+
+				// Test for equality here
+
+				//GlobalHandle(param);
 			}
 
-			GlobalUnlock(HRI);*/
-
-			RAWINPUT *Rawtest = malloc(InputSize); // = malloc(InputSize);
-			memcpy(Rawtest, RI, InputSize);
-			HRAWINPUT HRI = (HRAWINPUT) GlobalHandle(Rawtest);
-
-			// Try using our new handle!
-			RAWINPUT *Rooty = malloc(InputSize);
-			if(HRI)
-				GetRawInputData((HRAWINPUT) HRI, RID_INPUT, Rooty, &InputSize, sizeof(RAWINPUTHEADER));
-			else
-				printf("DIDNT WORK\n\n");
-
-			GlobalFree(HRI);
+			printf("LParam: %d\n", (UINT) LParam);
 			
-			char *raw = (char *) RI;
-			char *raw2 = (char *) Rooty;
+			
 			switch(RI->header.dwType)
 			{
 				case RIM_TYPEHID:
 				{
-					printf("DD ");
+					/*printf("DD ");
 					for(int i = 0; i < InputSize; ++i)
 						printf("%02x", raw[i]);
 					printf("\nRH ");
 					for(int i = 0; i < InputSize; ++i)
-						printf("%02x", raw2[i]);
+						printf("%02x", raw2[i]);*/
 					//printf("HID");
 				} break;
 
@@ -211,19 +177,17 @@ WindowProc(	HWND Window,
 
 				default:
 				{
-					printf("MOUSE");
+					//printf("MOUSE");
 				} break;
 			}
 
-			printf("\n");
-			//printf("\r");
-			//fflush(stdout);
+			free(RI);
+
 			/*char *pRI = (char *) &RI;
 			for(int i = 0; i < sizeof(RAWINPUT); ++i)
 			{
 				printf("%02x", (unsigned char) pRI[i]);
 			}*/
-			//printf("RawInput!\n");
 
 			Result = DefWindowProc(Window, Message, WParam, LParam);
 		} break;

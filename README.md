@@ -33,6 +33,6 @@ build.bat IOFinal.c
 
 * **WM_INPUT** messeges can be recieved from a pen arbitrarily using the *INPUTSINK* attribute while registering the RI device -- however, once the RAWINPUT structure is returned from **GetRawInputData()**, we cannot place it back into a handle (using **GlobalAlloc()** or **GlobalHandle()**) to reinject into another context. Ideas:
 
- * Try examining the *HRAWINPUT* of *LPARAM* to see if we can figure out how it is different from those we can make with the Global memory management functions.
+ * ~~Try examining the *HRAWINPUT* of *LPARAM* to see if we can figure out how it is different from those we can make with the Global memory management functions.~~ *Said handles are not manageable with GlobalLock(), etc.*
 
  * Switch to using Pointer messeges (can we capture all messeges still as with *INPUTSINK*? Register pointers?)

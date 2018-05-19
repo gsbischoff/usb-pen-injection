@@ -100,6 +100,29 @@ WindowProc(	HWND Window,
 			RAWINPUT *RI = malloc(InputSize); // = malloc(InputSize);
 			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, RI, &InputSize, sizeof(RAWINPUTHEADER));
 			
+			// We have the info as RI, we can create a raw handle to it by
+			// using the function GlobalAlloc
+
+			HGLOBAL HRI = GlobalAlloc(GHND, InputSize);
+
+			// Accesses the memory of this handle so we can initialize it
+			RAWINPUT *pRI = GlobalLock(HRI);
+
+			// Initialize our handle's memory with our Rawinput data
+			if(pRI)
+			{
+				printf("Handle gave back memory!\n");
+				memcpy(pRI, RI, InputSize);
+			}
+
+			GlobalUnlock(HRI);
+
+			// Try using our new handle!
+			RAWINPUT *Rawtest = malloc(InputSize); // = malloc(InputSize);
+			GetRawInputData((HRAWINPUT) HRI, RID_INPUT, Rawtest, &InputSize, sizeof(RAWINPUTHEADER));
+
+			GlobalFree(HRI);
+
 			char *raw = (char *) RI;
 			switch(RI->header.dwType)
 			{

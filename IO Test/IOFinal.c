@@ -158,14 +158,42 @@ WindowProc(	HWND Window,
 
 			RAWINPUT *RI = malloc(InputSize); // = malloc(InputSize);
 			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, RI, &InputSize, sizeof(RAWINPUTHEADER));
+
+			// We have the info as RI, we can create a raw handle to it by
+			// using the function GlobalAlloc
+
+			HGLOBAL HRI = GlobalAlloc(GHND, InputSize);
+
+			// Accesses the memory of this handle so we can initialize it
+			RAWINPUT *pRI = GlobalLock(HRI);
+
+			// Initialize our handle's memory with our Rawinput data
+			if(pRI)
+			{
+				//printf("Handle gave back memory!\n");
+				memcpy(pRI, RI, InputSize);
+			}
+
+			GlobalUnlock(HRI);
+
+			// Try using our new handle!
+			RAWINPUT *Rawtest = malloc(InputSize); // = malloc(InputSize);
+			GetRawInputData((HRAWINPUT) HRI, RID_INPUT, Rawtest, &InputSize, sizeof(RAWINPUTHEADER));
+
+			GlobalFree(HRI);
 			
 			char *raw = (char *) RI;
+			char *raw2 = (char *) Rawtest;
 			switch(RI->header.dwType)
 			{
 				case RIM_TYPEHID:
 				{
+					printf("DD ");
 					for(int i = 0; i < InputSize; ++i)
 						printf("%02x", raw[i]);
+					printf("\nRH ");
+					for(int i = 0; i < InputSize; ++i)
+						printf("%02x", raw2[i]);
 					//printf("HID");
 				} break;
 
@@ -180,9 +208,9 @@ WindowProc(	HWND Window,
 				} break;
 			}
 
-			printf("\t\t");
-			printf("\r");
-			fflush(stdout);
+			printf("\n");
+			//printf("\r");
+			//fflush(stdout);
 			/*char *pRI = (char *) &RI;
 			for(int i = 0; i < sizeof(RAWINPUT); ++i)
 			{

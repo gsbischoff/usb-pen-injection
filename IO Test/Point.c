@@ -28,15 +28,35 @@ main(int argc, char **argv)
 				CW_USEDEFAULT,
 				CW_USEDEFAULT,
 				CW_USEDEFAULT,
-				HWND_MESSAGE,
+				0, //HWND_MESSAGE,
 				0,
 				GetModuleHandle(0),
 				0);
+		
 		if(WindowHandle)
 		{
 			printf("Success!\n");
 
-			Sleep(1000);
+			BOOL bRes = RegisterPointerDeviceNotifications(WindowHandle, TRUE);
+
+			if(!bRes)
+				printerr(GetLastError());
+
+			MSG Message;
+			for(;;)
+			{
+				BOOL MessageResult = GetMessage(&Message, 0, 0, 0);
+				if(MessageResult > 0)
+				{
+					printf("Got stuff!\n");
+					TranslateMessage(&Message);
+					DispatchMessage(&Message);
+				}
+				else
+				{
+					break;
+				}
+			}
 		}
 		else
 		{

@@ -19,11 +19,28 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 			RAWINPUT *RI = malloc(InputSize);
 			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, RI, &InputSize, sizeof(RAWINPUTHEADER));
 
-			switch(RI->data.keyboard.VKey)
+			USHORT VK = RI->data.keyboard.VKey;
+			//0x30 = 0 key, ..., 0x39 is 9
+			// VK_RETURN
+			// VK_ESCAPE
+			switch(VK)
 			{
-				default:
+				case VK_RETURN:
 				{
 
+				} break;
+
+				case VK_ESCAPE:
+				{
+
+				} break;
+
+				default:
+				{
+					if(0x30 <= VK && 0x39 >= VK)
+						printf("Pressed %d!\n", VK - 0x30);
+					else
+						Result = DefWindowProc(Window, Message, WParam, LParam);
 				} break;
 			}
 		} break;
@@ -41,7 +58,6 @@ int
 main()
 {
 	RAWINPUTDEVICE RID = {0};
-
 	
 	WNDCLASS WindowClass = {0};
 

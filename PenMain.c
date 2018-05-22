@@ -1,5 +1,6 @@
 //#include "NetworkHeader.h"
 #include <windows.h>
+#include <stdio.h>
 
 LRESULT CALLBACK
 WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
@@ -8,11 +9,23 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 
 	switch(Message)
 	{
-		case WM_POINTERUPDATE:
+		case WM_INPUT:
 		{
-			//GetPointer
-			printf("Pointer input!\n");
-			Result = DefWindowProc(Window, Message, WParam, LParam);
+			// Find out size of input
+			int InputSize;
+			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, NULL, &InputSize, sizeof(RAWINPUTHEADER));
+
+			// Allocate and fill in a RAWINPUT struct of that size
+			RAWINPUT *RI = malloc(InputSize);
+			GetRawInputData((HRAWINPUT) LParam, RID_INPUT, RI, &InputSize, sizeof(RAWINPUTHEADER));
+
+			switch(RI->data.keyboard.VKey)
+			{
+				default:
+				{
+
+				} break;
+			}
 		} break;
 
 		default:
@@ -27,6 +40,9 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 int
 main()
 {
+	RAWINPUTDEVICE RID = {0};
+
+	
 	WNDCLASS WindowClass = {0};
 
 	WindowClass.style = CS_OWNDC;
@@ -50,20 +66,29 @@ main()
 				0,
 				GetModuleHandle(0),
 				0);
+
+		RID.usUsagePage = 0x1;
+		RID.usUsage = 0x6; // Keyboard
+		RID.dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
+		RID.hwndTarget = WindowHandle;
+		//RID.hwndTarget = GetConsoleWindow();
+
+		RegisterRawInputDevices(&RID, 1, sizeof(RAWINPUTDEVICE));
 		
 		if(WindowHandle)
 		{
 			printf("Success!\n");
 
-			BOOL bRes = RegisterPointerDeviceNotifications(WindowHandle, TRUE);
+			//BOOL bRes = RegisterPointerDeviceNotifications(WindowHandle, TRUE);
 
-			if(!bRes)
-				printerr(GetLastError());
+			//if(!bRes)
+			//	printerr(GetLastError());
 
 			MSG Message;
 			for(;;)
 			{
 				BOOL MessageResult = GetMessage(&Message, 0, 0, 0);
+				//BOOL MessageResult = GetMessage(&Message, GetConsoleWindow(), 0, 0);
 				if(MessageResult > 0)
 				{
 					printf("Got stuff!\n");
@@ -80,7 +105,7 @@ main()
 		{
 			printf("Failed!\n");
 
-			printerr(GetLastError());
+			//printerr(GetLastError());
 		}
 	}
 	return(0);

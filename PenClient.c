@@ -63,7 +63,7 @@ main(int argc, char **argv)
 		if(recv(sock, (char *) &Point, sizeof(POINT), 0) <= 0)
 			break;
 
-		SetCursorPos(Point.x, Point.y)
+		SetCursorPos(Point.x, Point.y);
 	}
 
 	closesocket(sock);

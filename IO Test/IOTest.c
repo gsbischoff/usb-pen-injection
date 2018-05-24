@@ -108,11 +108,27 @@ main()
 		{
 			printf("Something worked!\n");
 
+			char buf[100];
+			int BytesRead;
+
+			if(ReadFile(DeviceHandle, buf, 100, &BytesRead, 0))
+			{
+				printf("Read succeeded!: ");
+
+				for(int j = 0; j < 100; j++)
+					printf("%02x", buf[j]);
+			}
+			else
+			{
+				printf("Ln %d\n", __LINE__);
+				printerr(GetLastError());
+			}
+
 			CloseHandle(DeviceHandle);
 		}
 		else
 		{
-			printf("Ln __LINE__");
+			printf("Ln %d\n", __LINE__);
 			printerr(GetLastError());
 		}
 

@@ -117,6 +117,50 @@ WindowProc(	HWND Window,
 
 			if(1)
 			{
+				// Test to see if GetRawInputData locks a handle
+				HGLOBAL handle = GlobalAlloc(GHND, InputSize);
+
+				RAWINPUT *rawdata = GlobalLock(handle);
+
+
+				if(rawdata)
+				{
+					printf("Successfully created our handle...\n");
+
+					RAWINPUT t = {0};
+
+					t.data.mouse.ulButtons = 0xFFFF;
+					memcpy(rawdata, &t, InputSize);
+
+					// Close it and test our ruse...
+					handle = GlobalHandle(rawdata);
+
+					if(handle)
+					{
+						printf("Memory \'safe\'...\n");
+
+						RAWINPUT *test = malloc(InputSize);
+
+						if(GetRawInputData((HRAWINPUT) handle, RID_INPUT, test, &InputSize, sizeof(RAWINPUTHEADER)) >= 0)
+						{
+							printf("We got something...\n");
+							printerr(GetLastError());
+
+							printf("%d", test->data.mouse.ulButtons);
+						}
+						else
+						{
+							printf("Nooo\n");
+							printerr(GetLastError());
+						}
+					}
+
+				}
+			}
+			printf("pssst\n");
+
+			if(1)
+			{
 				printf("In test!\n");
 				HRAWINPUT param = (HRAWINPUT) LParam;
 				RAWINPUT *maybe = GlobalLock(param);

@@ -37,8 +37,10 @@ build.bat IOFinal.c
 
  * Switch to using Pointer messeges (can we capture all messeges still as with *INPUTSINK*? Register pointers?)
 
+ * See if WinTab has APIs for injection
 
-|        | Broadcast Globally | Inject? | Input sink? |
+
+|Summery | Broadcast Globally | Inject? | Input sink? |
 |-------:|:------------------:|:-------:|:-----------:|
 |RawInput| Yes                | **No**  | Yes         |
 |Pointers| ?                  | ?       | No?         |

@@ -84,26 +84,41 @@ main()
 	CURSORINFO CursorInfo;
 	CursorInfo.cbSize = sizeof(CURSORINFO);
 
-#if 0
+#if 1
 	GetCursorInfo(&CursorInfo);
 
-	POINT Point;
-	POINT Last = {0};
-	while(GetCursorPos(&Point))
+	//Try to get mouse RI
+	int NumDevices;
+	GetRawInputDeviceList(NULL, &NumDevices, sizeof(RAWINPUTDEVICELIST));
+
+	RAWINPUTDEVICELIST *RIDeviceList = malloc(NumDevices * sizeof(RAWINPUTDEVICELIST));
+	GetRawInputDeviceList(RIDeviceList, &NumDevices, sizeof(RAWINPUTDEVICELIST));
+
+	for(int i = 0; i < NumDevices; ++i)
 	{
-		if(Last.x != Point.x || Last.y != Point.y)
+		int DeviceNameSize;
+		GetRawInputDeviceInfo(RIDeviceList[i].hDevice, RIDI_DEVICENAME, NULL, &DeviceNameSize);
+
+		char *name = malloc(DeviceNameSize);
+		GetRawInputDeviceInfo(RIDeviceList[i].hDevice, RIDI_DEVICENAME, name, &DeviceNameSize);
+
+		HANDLE DeviceHandle;
+
+		if((DeviceHandle = CreateFile(name, 0, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) != INVALID_HANDLE_VALUE)
 		{
-			putc('\r', stdout);
-			fflush(stdout);
-			printf("x: %d\ty: %d\t", Point.x, Point.y);
-			//fflush(stdout);
+			printf("Something worked!\n");
+
+			CloseHandle(DeviceHandle);
+		}
+		else
+		{
+			printf("Ln __LINE__");
+			printerr(GetLastError());
 		}
 
-		Sleep(10);
-
-		Last = Point;
+		free(name);
 	}
-#elif 1
+#elif 0
 	UINT32 deviceCount;
 
 	if(GetPointerDevices(&deviceCount, 0) == 0)

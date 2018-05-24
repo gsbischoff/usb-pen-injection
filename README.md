@@ -40,8 +40,8 @@ build.bat IOFinal.c
  * See if WinTab has APIs for injection
 
 
-|Summery | Broadcast Globally | Inject? | Input sink? |
-|-------:|:------------------:|:-------:|:-----------:|
-|RawInput| Yes                | **No**  | Yes         |
-|Pointers| ?                  | ?       | No?         |
-|WinTab  | ?                  | ?       | ?           |
+|*Summary*| Broadcast Globally | Inject? | Input sink? |
+|--------:|:------------------:|:-------:|:-----------:|
+|RawInput | Yes                | **No**  | Yes         |
+|Pointers | ?                  | ?       | No?         |
+|WinTab   | ?                  | ?       | ?           |

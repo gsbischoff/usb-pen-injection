@@ -36,3 +36,9 @@ build.bat IOFinal.c
  * ~~Try examining the *HRAWINPUT* of *LPARAM* to see if we can figure out how it is different from those we can make with the Global memory management functions.~~ *Said handles are not manageable with GlobalLock(), etc.*
 
  * Switch to using Pointer messeges (can we capture all messeges still as with *INPUTSINK*? Register pointers?)
+
+         | Broadcast Globally | Inject? | Input sink? |
+ -------:|:------------------:|:-------:|:-----------:|
+ RawInput| Yes                | **No**  | Yes         |
+ Pointers| ?                  | ?       | No?         |
+ WinTab  | ?                  | ?       | ?           |

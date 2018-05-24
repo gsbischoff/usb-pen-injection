@@ -37,8 +37,9 @@ build.bat IOFinal.c
 
  * Switch to using Pointer messeges (can we capture all messeges still as with *INPUTSINK*? Register pointers?)
 
-        | Broadcast Globally | Inject? | Input sink? |
--------:|:------------------:|:-------:|:-----------:|
-RawInput| Yes                | **No**  | Yes         |
-Pointers| ?                  | ?       | No?         |
-WinTab  | ?                  | ?       | ?           |
+
+|        | Broadcast Globally | Inject? | Input sink? |
+|-------:|:------------------:|:-------:|:-----------:|
+|RawInput| Yes                | **No**  | Yes         |
+|Pointers| ?                  | ?       | No?         |
+|WinTab  | ?                  | ?       | ?           |

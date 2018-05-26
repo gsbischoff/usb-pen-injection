@@ -1,6 +1,9 @@
-#include <windows.h>
-
 #define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 
 void printerr(DWORD err);
 LRESULT CALLBACK WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam);
@@ -37,6 +40,7 @@ main(int argc, char **argv)
 		{
 			printf("Success!\n");
 
+			#if 0
 			{
 				printf("Testing RI devices\n\n");
 
@@ -58,8 +62,11 @@ main(int argc, char **argv)
 						printf("Device %u GetPointerDevice() worked!\n", i);
 				}
 			}
+			#endif
 
 			BOOL bRes = RegisterPointerDeviceNotifications(WindowHandle, TRUE);
+			// WM_POINTERDEVICEINRANGE
+			// WM_POINTERDEVICEOUTOFRANGE
 
 			if(!bRes)
 				printerr(GetLastError());
@@ -70,7 +77,12 @@ main(int argc, char **argv)
 				BOOL MessageResult = GetMessage(&Message, 0, 0, 0);
 				if(MessageResult > 0)
 				{
-					printf("Got stuff!\n");
+					//printf("\r%5x", Message.message);
+					//fflush(stdout);
+					UINT msgnum = Message.message;
+					if(msgnum != WM_POINTERDEVICEINRANGE || msgnum != WM_POINTERDEVICEINRANGE)
+						printf("Got other: %x\n", msgnum);
+
 					TranslateMessage(&Message);
 					DispatchMessage(&Message);
 				}
@@ -102,6 +114,17 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 			//GetPointer
 			printf("Pointer input!\n");
 			Result = DefWindowProc(Window, Message, WParam, LParam);
+		} break;
+
+		case WM_POINTERDEVICEINRANGE:
+		{
+			printf("Ptr in range!\n");
+		} break;
+
+		case WM_POINTERDEVICEOUTOFRANGE:
+		{
+			printf("Ptr out of range!\n");
+
 		} break;
 
 		default:

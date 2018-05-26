@@ -71,6 +71,8 @@ main(int argc, char **argv)
 			if(!bRes)
 				printerr(GetLastError());
 
+			// Create a thread to check hte pens state while it is in frame.
+
 			MSG Message;
 			for(;;)
 			{
@@ -119,6 +121,7 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 		case WM_POINTERDEVICEINRANGE:
 		{
 			printf("Ptr in range!\n");
+			GET_POINTER_WPARAM(WParam);
 		} break;
 
 		case WM_POINTERDEVICEOUTOFRANGE:

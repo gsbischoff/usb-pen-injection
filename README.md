@@ -9,9 +9,12 @@ The initial implementation uses the sockets API (with Winsock). UDP sockets, USB
 
 **PenClient.c** and **PenServer.c** contain the sources of the program to recieve and inject input; and to capture and send input over a designated protocol. Currently, these send cursor movements over TCP/IP stream sockets as "boilerplate" -- they will be modified to use pen input and send the input over other means later.
 
+**Point.c** is for testing specifically using Pointer APIs.
+
 **IOTest.c** is for any scratchwork towards capturing and injecting pen input properly.
 
-**IOFinal.c** contains only the code necessary for capturing the raw pen input. 
+**IOFinal.c** contains only the code necessary for capturing the raw pen input using RawInput. *No longer used for testing*
+
 
 ## Building
 
@@ -31,11 +34,11 @@ build.bat IOFinal.c
 
 ### Notes/Current Issues
 
-* **WM_INPUT** messeges can be recieved from a pen arbitrarily using the *INPUTSINK* attribute while registering the RI device -- however, once the RAWINPUT structure is returned from **GetRawInputData()**, we cannot place it back into a handle (using **GlobalAlloc()** or **GlobalHandle()**) to reinject into another context. Ideas:
+* **WM_INPUT** messages can be recieved from a pen arbitrarily using the *INPUTSINK* attribute while registering the RI device -- however, once the RAWINPUT structure is returned from **GetRawInputData()**, we cannot place it back into a handle (using **GlobalAlloc()** or **GlobalHandle()**) to reinject into another context. Ideas:
 
  * ~~Try examining the *HRAWINPUT* of *LPARAM* to see if we can figure out how it is different from those we can make with the Global memory management functions.~~ *Said handles are not manageable with GlobalLock(), etc.*
 
- * Switch to using Pointer messeges (can we capture all messeges still as with *INPUTSINK*? Register pointers?)
+ * Switch to using Pointer messages (can we capture all messages still as with *INPUTSINK*? Register pointers?)
 
  * See if WinTab has APIs for injection
 

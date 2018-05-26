@@ -38,7 +38,7 @@ main(int argc, char **argv)
 			printf("Success!\n");
 
 			{
-				printf("Testing RI devices\n");
+				printf("Testing RI devices\n\n");
 
 				// Lets try GetPointerDevice() using the RAWINPUTDEVICE list results
 				int NumRIDevices;
@@ -54,6 +54,8 @@ main(int argc, char **argv)
 					
 					if(!GetPointerDevice(RIDeviceList->hDevice, &PDI))
 						printerr(GetLastError());
+					else
+						printf("Device %u GetPointerDevice() worked!\n", i);
 				}
 			}
 

@@ -8,6 +8,17 @@
 void printerr(DWORD err);
 LRESULT CALLBACK WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam);
 
+HANDLE ThreadHandle;
+
+DWORD 
+ThreadProc(LPVOID lpParameter)
+{
+	for(;;)
+	{
+		printf("Thread started!\n");
+		Sleep(500);
+	}
+}
 
 int
 main(int argc, char **argv)
@@ -72,7 +83,16 @@ main(int argc, char **argv)
 				printerr(GetLastError());
 
 			// Create a thread to check hte pens state while it is in frame.
+			ThreadHandle = CreateThread(0, 0, ThreadProc, NULL, CREATE_SUSPENDED, 0);
 
+
+			if(!ThreadHandle)
+			{
+				printerr(GetLastError());
+				exit(1);
+			}
+
+		
 			MSG Message;
 			for(;;)
 			{
@@ -121,13 +141,14 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 		case WM_POINTERDEVICEINRANGE:
 		{
 			printf("Ptr in range!\n");
-			GET_POINTER_WPARAM(WParam);
+			ResumeThread(ThreadHandle);
+			//GET_POINTERID_WPARAM(WParam);
 		} break;
 
 		case WM_POINTERDEVICEOUTOFRANGE:
 		{
 			printf("Ptr out of range!\n");
-
+			SuspendThread(ThreadHandle);
 		} break;
 
 		default:

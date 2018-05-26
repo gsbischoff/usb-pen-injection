@@ -37,6 +37,26 @@ main(int argc, char **argv)
 		{
 			printf("Success!\n");
 
+			{
+				printf("Testing RI devices\n");
+
+				// Lets try GetPointerDevice() using the RAWINPUTDEVICE list results
+				int NumRIDevices;
+				GetRawInputDeviceList(NULL, &NumRIDevices, sizeof(RAWINPUTDEVICELIST));
+
+				RAWINPUTDEVICELIST *RIDeviceList = malloc(sizeof(RAWINPUTDEVICELIST) * NumRIDevices);
+				GetRawInputDeviceList(RIDeviceList, &NumRIDevices, sizeof(RAWINPUTDEVICELIST));
+
+				for(int i = 0; i < NumRIDevices; ++i)
+				{
+					printf("Device %u:\n", i);
+					POINTER_DEVICE_INFO PDI;
+					
+					if(!GetPointerDevice(RIDeviceList->hDevice, &PDI))
+						printerr(GetLastError());
+				}
+			}
+
 			BOOL bRes = RegisterPointerDeviceNotifications(WindowHandle, TRUE);
 
 			if(!bRes)

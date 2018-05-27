@@ -9,7 +9,9 @@ The initial implementation uses the sockets API (with Winsock). UDP sockets, USB
 
 **PenClient.c** and **PenServer.c** contain the sources of the program to recieve and inject input; and to capture and send input over a designated protocol. Currently, these send cursor movements over TCP/IP stream sockets as "boilerplate" -- they will be modified to use pen input and send the input over other means later.
 
-**Point.c** is for testing specifically using Pointer APIs.
+**Point.c** is for capturing Pen input using Pointer APIs. This is to be joined with **PenServer.c**.
+
+### Testbeds
 
 **IOTest.c** is for any scratchwork towards capturing and injecting pen input properly.
 

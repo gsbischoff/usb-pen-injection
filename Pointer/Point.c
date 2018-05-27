@@ -8,7 +8,9 @@ void printerr(DWORD err);
 LRESULT CALLBACK WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam);
 DWORD __stdcall ThreadProc(LPVOID lpParameter);
 HANDLE ThreadHandle;
-UINT32 PointerId;
+UINT32 NumHits;
+//UINT32 PointerId;
+
 
 
 int
@@ -67,22 +69,19 @@ main(int argc, char **argv)
 			#endif
 
 			BOOL bRes = RegisterPointerDeviceNotifications(WindowHandle, TRUE);
-			// WM_POINTERDEVICEINRANGE
-			// WM_POINTERDEVICEOUTOFRANGE
 
 			if(!bRes)
 				printerr(GetLastError());
 
-			// Create a thread to check hte pens state while it is in frame.
-			//ThreadHandle = CreateThread(0, 0, ThreadProc, NULL, CREATE_SUSPENDED, 0);
-
-/*
+			// Create a thread to send the pen's state while it is in frame.
+			ThreadHandle = CreateThread(0, 0, ThreadProc, NULL, CREATE_SUSPENDED, 0);
+				
 			if(!ThreadHandle)
 			{
 				printerr(GetLastError());
 				exit(1);
 			}
-*/
+			ResumeThread(ThreadHandle);
 		
 			MSG Message;
 			for(;;)
@@ -122,34 +121,31 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 	{
 		case WM_POINTERUPDATE:
 		{
-			printf("Pointer input! %u\n", GET_POINTERID_WPARAM(WParam));
+			UINT32 pi = GET_POINTERID_WPARAM(WParam);
+			//ResumeThread(ThreadHandle);
+			InterlockedIncrement(&NumHits);
+			POINTER_PEN_INFO Info = {0};
+			if(IS_POINTER_INRANGE_WPARAM(WParam) 
+			   && GetPointerPenInfo(pi, &Info))
+			{
+				UINT32 pressure = Info.pressure;
+				//printf("\rl: %4u", pressure);
+				//fflush(stdout);
+				//TouchInfo.rcContactRaw;
+			}
+
 			Result = DefWindowProc(Window, Message, WParam, LParam);
 		} break;
 
 		case WM_POINTERDEVICEINRANGE:
 		{
-			printf("Ptr in range! %u\n", IS_POINTER_INRANGE_WPARAM(WParam));
+			//printf("Ptr in range! %u\n", IS_POINTER_INRANGE_WPARAM(WParam));
 			//InterlockedExchange(&PointerId, GET_POINTERID_WPARAM(WParam));
-			UINT32 pi = GET_POINTERID_WPARAM(WParam);
-			//ResumeThread(ThreadHandle);
-
-			POINTER_INFO Info = {0};
-			if(GetPointerInfo(pi, &Info))
-			{
-				UINT32 pressure = Info.pointerId;
-				printf("l: %u\n", pressure);
-				//TouchInfo.rcContactRaw;
-			}
-			else
-			{
-				printf("LINE %u\n", __LINE__);
-				printerr(GetLastError());
-			}
 		} break;
 
 		case WM_POINTERDEVICEOUTOFRANGE:
 		{
-			printf("Ptr out of range!: %u\n", IS_POINTER_INRANGE_WPARAM(WParam));
+			//printf("Ptr out of range!: %u\n", IS_POINTER_INRANGE_WPARAM(WParam));
 			//SuspendThread(ThreadHandle);
 		} break;
 
@@ -186,7 +182,7 @@ ThreadProc(LPVOID lpParameter)
 {
 	for(;;)
 	{
-		printf("Thread started!\n");
-		Sleep(500);
+		printf("%03u hits.\n", InterlockedExchange(&NumHits, 0));
+		Sleep(1000);
 	}
 }

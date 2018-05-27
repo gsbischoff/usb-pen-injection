@@ -33,15 +33,11 @@ main(int argc, char **argv)
 	struct WSAData data = { 0 };
 	WORD wVersionRequested = MAKEWORD(1,1);
 
-	printf("1...\n");
-
 	if(WSAStartup(wVersionRequested, &data))
 		DieWithError("WSAStartup() failed");
 
 	if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 		DieWithError("sock() failed");
-
-		printf("2...\n");
 
 	memset(&ServerAddr, 0, sizeof(ServerAddr));
 	ServerAddr.sin_family		= AF_INET;
@@ -50,13 +46,12 @@ main(int argc, char **argv)
 
 	if(connect(sock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
 		DieWithError("connect() failed");
-		printf("3...\n");
 
-	POINT Point = { 0 };
 	printf("About to recieve...\n");
 
-	POINTER_PEN_INFO recvBuffer = {};
+	POINTER_PEN_INFO recvBuffer = {0};
 
+	// TODO: test recieving cursor movements over UDP, then change to sending the PEN_INFO struct
 	for(;;)
 	{
 		//Point.x = 0;
@@ -65,22 +60,28 @@ main(int argc, char **argv)
 		if(recv(sock, (char *) &recvBuffer, sizeof(POINTER_PEN_INFO), 0) <= 0)
 			break;
 
-		InjectTouch(&recvBuffer);
+		//InjectTouch(recvBuffer);
 		//SetCursorPos(Point.x, Point.y);
 	}
 
 	closesocket(sock);
-
 	WSACleanup();
 
 	return(0);
 }
 
 void
-InjectTouch(POINTER_PEN_INFO *recvBuffer)
+InjectTouch(POINTER_PEN_INFO PenInfo)
 {
 	if(InitializeTouchInjection(1, TOUCH_FEEDBACK_DEFAULT))
 	{
+		POINTER_TOUCH_INFO touchInfo = {0};
+		memcpy(&touchInfo.pointerInfo, &PenInfo.pointerInfo, sizeof(POINTER_INFO));
+
+		// Don't have penFlag for eraser! Touch has no flags!
+		touchInfo.touchMask = TOUCH_MASK_PRESSURE; // only injecting pressure
+		touchInfo.pressure = PenInfo.pressure;
+
 		InjectTouchInput(1, &touchInfo);
 	}
 }

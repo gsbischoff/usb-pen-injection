@@ -40,13 +40,21 @@ build.bat IOFinal.c
 
  * ~~Try examining the *HRAWINPUT* of *LPARAM* to see if we can figure out how it is different from those we can make with the Global memory management functions.~~ *Said handles are not manageable with GlobalLock(), etc.*
 
- * Switch to using Pointer messages (can we capture all messages still as with *INPUTSINK*? Register pointers?)
-
  * See if WinTab has APIs for injection
 
+* Switch to using Pointer messages (can we capture all messages still as with *INPUTSINK*? Register pointers?)
 
-|*Summary*| Broadcast Globally | Inject? | Input sink? |
-|--------:|:------------------:|:-------:|:-----------:|
-|RawInput | Yes                | **No**  | Yes         |
-|Pointers | ?                  | ?       | No?         |
-|WinTab   | ?                  | ?       | ?           |
+ * **RegisterPointerDeviceNotifications()** allows *message-windows* to recieve inputs telling when a pointer in put in range; however, the *pointerId* that is returned from **GET_POINTERID_WPARAM()** on those messages is invalid. **ONLY** when retrieving it through a **WM_POINTERUPDATE** message can you call **GetPointerPenInfo()**. Additionally, *pointerId*s are unique, each time the pen leaves and comes back in range, a new *pointerId* is returned.
+
+ * Must use a visible window.
+
+ * Can we get pressure and raw pen info using RAWINPUT (for which we have INPUTSINK attribute) and reinject it using the touch injection APIs?
+
+
+|*Summary*| Broadcast Globally | Inject?       | Input sink? |
+|--------:|:------------------:|:-------------:|:-----------:|
+|RawInput | Yes                | **No**        | Yes         |
+|Pointers | *Inject touch*     | *Only touch*  | No          |
+|WinTab   | ?                  | ?             | ?           |
+
+*There exist PenInjection APIs in C++/RT, but the only thing lost with TouchInjection is the eraser's functionality.*

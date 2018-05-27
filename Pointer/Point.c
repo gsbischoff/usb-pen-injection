@@ -44,30 +44,6 @@ main(int argc, char **argv)
 		{
 			printf("Success!\n");
 
-			#if 0
-			{
-				printf("Testing RI devices\n\n");
-
-				// Lets try GetPointerDevice() using the RAWINPUTDEVICE list results
-				int NumRIDevices;
-				GetRawInputDeviceList(NULL, &NumRIDevices, sizeof(RAWINPUTDEVICELIST));
-
-				RAWINPUTDEVICELIST *RIDeviceList = malloc(sizeof(RAWINPUTDEVICELIST) * NumRIDevices);
-				GetRawInputDeviceList(RIDeviceList, &NumRIDevices, sizeof(RAWINPUTDEVICELIST));
-
-				for(int i = 0; i < NumRIDevices; ++i)
-				{
-					printf("Device %u:\n", i);
-					POINTER_DEVICE_INFO PDI;
-					
-					if(!GetPointerDevice(RIDeviceList->hDevice, &PDI))
-						printerr(GetLastError());
-					else
-						printf("Device %u GetPointerDevice() worked!\n", i);
-				}
-			}
-			#endif
-
 			BOOL bRes = RegisterPointerDeviceNotifications(WindowHandle, TRUE);
 
 			if(!bRes)
@@ -89,10 +65,6 @@ main(int argc, char **argv)
 				BOOL MessageResult = GetMessage(&Message, 0, 0, 0);
 				if(MessageResult > 0)
 				{
-					//printf("\r%5x", Message.message);
-					//fflush(stdout);
-					UINT msgnum = Message.message;
-
 					TranslateMessage(&Message);
 					DispatchMessage(&Message);
 				}
@@ -124,14 +96,15 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 			UINT32 pi = GET_POINTERID_WPARAM(WParam);
 			//ResumeThread(ThreadHandle);
 			InterlockedIncrement(&NumHits);
+
 			POINTER_PEN_INFO Info = {0};
 			if(IS_POINTER_INRANGE_WPARAM(WParam) 
 			   && GetPointerPenInfo(pi, &Info))
 			{
-				UINT32 pressure = Info.pressure;
-				//printf("\rl: %4u", pressure);
-				//fflush(stdout);
-				//TouchInfo.rcContactRaw;
+				// PointerInfo struct + pressure (set touchmask + flags appropriately)
+
+				//sendInput()
+
 			}
 
 			Result = DefWindowProc(Window, Message, WParam, LParam);
@@ -182,7 +155,8 @@ ThreadProc(LPVOID lpParameter)
 {
 	for(;;)
 	{
-		printf("%03u hits.\n", InterlockedExchange(&NumHits, 0));
+		printf("%03u hits.\n", InterlockedExchange(&NumHits, 0)); //
+		NumHits = 0;
 		Sleep(1000);
 	}
 }

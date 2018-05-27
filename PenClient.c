@@ -55,15 +55,18 @@ main(int argc, char **argv)
 	POINT Point = { 0 };
 	printf("About to recieve...\n");
 
+	POINTER_PEN_INFO recvBuffer = {};
+
 	for(;;)
 	{
-		Point.x = 0;
-		Point.y = 0;
+		//Point.x = 0;
+		//Point.y = 0;
 
-		if(recv(sock, (char *) &Point, sizeof(POINT), 0) <= 0)
+		if(recv(sock, (char *) &recvBuffer, sizeof(POINTER_PEN_INFO), 0) <= 0)
 			break;
 
-		SetCursorPos(Point.x, Point.y);
+		InjectTouch(&recvBuffer);
+		//SetCursorPos(Point.x, Point.y);
 	}
 
 	closesocket(sock);
@@ -71,4 +74,13 @@ main(int argc, char **argv)
 	WSACleanup();
 
 	return(0);
+}
+
+void
+InjectTouch(POINTER_PEN_INFO *recvBuffer)
+{
+	if(InitializeTouchInjection(1, TOUCH_FEEDBACK_DEFAULT))
+	{
+		InjectTouchInput(1, &touchInfo);
+	}
 }

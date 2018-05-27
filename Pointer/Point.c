@@ -11,8 +11,6 @@ HANDLE ThreadHandle;
 UINT32 NumHits;
 //UINT32 PointerId;
 
-
-
 int
 main(int argc, char **argv)
 {
@@ -103,8 +101,8 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 			{
 				// PointerInfo struct + pressure (set touchmask + flags appropriately)
 
-				//sendInput()
-
+				// sendInput(&Info, ...)
+				// Or add to thread's work queue (maybe use GetPointerPenInfoHistory()?)
 			}
 
 			Result = DefWindowProc(Window, Message, WParam, LParam);
@@ -120,6 +118,11 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 		{
 			//printf("Ptr out of range!: %u\n", IS_POINTER_INRANGE_WPARAM(WParam));
 			//SuspendThread(ThreadHandle);
+		} break;
+
+		case WM_DESTROY:
+		{
+			PostQuitMessage(0);
 		} break;
 
 		default:
@@ -156,7 +159,7 @@ ThreadProc(LPVOID lpParameter)
 	for(;;)
 	{
 		printf("%03u hits.\n", InterlockedExchange(&NumHits, 0)); //
-		NumHits = 0;
+
 		Sleep(1000);
 	}
 }

@@ -36,13 +36,13 @@ build.bat IOFinal.c
 
 ### Notes/Current Issues
 
-* **WM_INPUT** messages can be recieved from a pen arbitrarily using the *INPUTSINK* attribute while registering the RI device -- however, once the RAWINPUT structure is returned from **GetRawInputData()**, we cannot place it back into a handle (using **GlobalAlloc()** or **GlobalHandle()**) to reinject into another context. Ideas:
+**WM_INPUT** messages can be recieved from a pen arbitrarily using the *INPUTSINK* attribute while registering the RI device -- however, once the RAWINPUT structure is returned from **GetRawInputData()**, we cannot place it back into a handle (using **GlobalAlloc()** or **GlobalHandle()**) to reinject into another context. Ideas:
 
  * ~~Try examining the *HRAWINPUT* of *LPARAM* to see if we can figure out how it is different from those we can make with the Global memory management functions.~~ *Said handles are not manageable with GlobalLock(), etc.*
 
  * See if WinTab has APIs for injection
 
-* Switch to using Pointer messages (can we capture all messages still as with *INPUTSINK*? Register pointers?)
+Switch to using Pointer messages (can we capture all messages still as with *INPUTSINK*? Register pointers?)
 
  * **RegisterPointerDeviceNotifications()** allows *message-windows* to recieve inputs telling when a pointer in put in range; however, the *pointerId* that is returned from **GET_POINTERID_WPARAM()** on those messages is invalid. **ONLY** when retrieving it through a **WM_POINTERUPDATE** message can you call **GetPointerPenInfo()**. Additionally, *pointerId*s are unique, each time the pen leaves and comes back in range, a new *pointerId* is returned.
 

@@ -161,5 +161,8 @@ ThreadProc(LPVOID lpParameter)
 		printf("%03u hits.\n", InterlockedExchange(&NumHits, 0)); //
 
 		Sleep(1000);
+
+		// Add a global variable that will indicate we have a new, unsent struct
+		// Set it to 0 once we've sent it (Interlocked)
 	}
 }

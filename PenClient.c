@@ -36,7 +36,7 @@ main(int argc, char **argv)
 
 	if(WSAStartup(wVersionRequested, &data))
 		DieWithError("WSAStartup() failed");
-		
+
 	/* Fill in serving address */
 	memset(&ServerAddr, 0, sizeof(ServerAddr));
 	ServerAddr.sin_family		= AF_INET;
@@ -55,26 +55,26 @@ main(int argc, char **argv)
 	if(bind(sock, (struct sockaddr *) &ClientAddr, sizeof(ClientAddr)) < 0)
 		DieWithError("bind() failed");
 
-	//POINTER_PEN_INFO recvBuffer = {0};
+	POINTER_PEN_INFO recvBuffer = {0};
 
-	POINT Point;
+	//POINT Point;
 
 	// TODO: test recieving cursor movements over UDP, then change to sending the PEN_INFO struct
 	for(;;)
 	{
-		Point.x = 0;
-		Point.y = 0;
+		//Point.x = 0;
+		//Point.y = 0;
 
 		fromLen = sizeof(FromAddr);
 
-		if(recvfrom(sock, (char *) &Point, sizeof(Point), 0,
+		if(recvfrom(sock, (char *) &recvBuffer, sizeof(recvBuffer), 0,
 			(struct sockaddr *) &FromAddr, &fromLen) < 0)
 			DieWithError("recvfrom() failed");
 
 
-		//InjectTouch(recvBuffer);
 		if(FromAddr.sin_addr.s_addr == ServerAddr.sin_addr.s_addr)
-			SetCursorPos(Point.x, Point.y);
+			InjectTouch(recvBuffer);
+			//SetCursorPos(Point.x, Point.y);
 	}
 
 	closesocket(sock);

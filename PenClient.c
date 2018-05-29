@@ -10,6 +10,7 @@ main(int argc, char **argv)
 {
 	int sock;						/* Socket descriptor for client */
 	struct sockaddr_in ServerAddr;	/* Local address */
+	struct sockaddr_in FromAddr;	/* Local address */
 	char *ServerHost;					/* Server address in dotted quad */
 	char *ServerPortString;				/* Server port */
 	unsigned short ServerPort; 		/* Server port */
@@ -25,10 +26,8 @@ main(int argc, char **argv)
 		ServerHost = strtok(argv[1], ":");
 
 		if((ServerPortString = strtok(NULL, ":")) != NULL)
-			ServerPort = htons(atoi(ServerPortString));
+			ServerPort = atoi(ServerPortString);
 	}
-
-	printf("IP is %s, port is %d!\n", ServerHost, ntohs(ServerPort));
 
 	struct WSAData data = { 0 };
 	WORD wVersionRequested = MAKEWORD(1,1);
@@ -36,32 +35,39 @@ main(int argc, char **argv)
 	if(WSAStartup(wVersionRequested, &data))
 		DieWithError("WSAStartup() failed");
 
-	if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+	//if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+	if((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
 		DieWithError("sock() failed");
 
 	memset(&ServerAddr, 0, sizeof(ServerAddr));
 	ServerAddr.sin_family		= AF_INET;
 	ServerAddr.sin_addr.s_addr	= ResolveHost(ServerHost); //inet_addr(ServerHost);
-	ServerAddr.sin_port			= ServerPort;
+	ServerAddr.sin_port			= htons(ServerPort);
 
-	if(connect(sock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
-		DieWithError("connect() failed");
+	//if(connect(sock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
+	//	DieWithError("connect() failed");
 
-	printf("About to recieve...\n");
+	//POINTER_PEN_INFO recvBuffer = {0};
 
-	POINTER_PEN_INFO recvBuffer = {0};
+	POINT Point;
 
 	// TODO: test recieving cursor movements over UDP, then change to sending the PEN_INFO struct
 	for(;;)
 	{
-		//Point.x = 0;
-		//Point.y = 0;
+		Point.x = 0;
+		Point.y = 0;
 
-		if(recv(sock, (char *) &recvBuffer, sizeof(POINTER_PEN_INFO), 0) <= 0)
-			break;
+		int FromLen = sizeof(struct sockaddr);
+
+		if(recvfrom(sock, (char *) &Point, sizeof(Point), 0,
+			(struct sockaddr *) &FromAddr, &FromLen) < 0)
+			DieWithError("recvfrom() failed");
+
+		//if(recv(sock, (char *) &recvBuffer, sizeof(POINTER_PEN_INFO), 0) <= 0)
+		//	break;
 
 		//InjectTouch(recvBuffer);
-		//SetCursorPos(Point.x, Point.y);
+		SetCursorPos(Point.x, Point.y);
 	}
 
 	closesocket(sock);

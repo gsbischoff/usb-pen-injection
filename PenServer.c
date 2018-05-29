@@ -25,7 +25,7 @@ main(int argc, char **argv)
 	if(WSAStartup(wVersionRequested, &data) < 0)
 		DieWithError("WSAStartup() failed");
 
-	if((ServerSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+	if((ServerSock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
 		DieWithError("socket() failed");
 
 	memset(&ServerAddr, 0, sizeof(ServerAddr));
@@ -36,15 +36,15 @@ main(int argc, char **argv)
 	if(bind(ServerSock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
 		DieWithError("bind() failed");
 
-	if(listen(ServerSock, 1) < 0)
-		DieWithError("listen() failed");
+	//if(listen(ServerSock, 1) < 0)
+	//	DieWithError("listen() failed");
 
 	int ClientAddrLen = sizeof(ClientAddr);
 
-	if((ClientSock = accept(ServerSock, (struct sockaddr *) &ClientAddr, &ClientAddrLen)) < 0)
-		DieWithError("accept() failed");
+	//if((ClientSock = accept(ServerSock, (struct sockaddr *) &ClientAddr, &ClientAddrLen)) < 0)
+	//	DieWithError("accept() failed");
 
-	printf("Recieved connection from %s!\n", inet_ntoa(ClientAddr.sin_addr));
+	//printf("Recieved connection from %s!\n", inet_ntoa(ClientAddr.sin_addr));
 
 	printf("Press enter to begin...\n");
 
@@ -63,7 +63,10 @@ main(int argc, char **argv)
 		// If the point has changed, send
 		if(Last.x != Point.x || Last.y != Point.y)
 		{
-			send(ClientSock, (char *) &Point, sizeof(POINT), 0);
+			//send(ClientSock, (char *) &Point, sizeof(POINT), 0);
+			if(sendto(ServerSock, (char *) &Point, sizeof(Point), 0,
+				(struct sockaddr *) &ClientAddr, sizeof(struct sockaddr)) < 0)
+				DieWithError("send() failed");
 			//printf(". ");
 		}
 		Last = Point;

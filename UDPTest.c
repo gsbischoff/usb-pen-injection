@@ -33,7 +33,10 @@ main(int argc, char **argv)
 		DieWithError("bind() failed");
 
 	if(argc != 3)
-		return(0);
+	{
+		printf("Usage: %s -s <host>", argv[0]);
+		exit(1);
+	}
 
 	char *serverHost = NULL;
 
@@ -52,16 +55,27 @@ main(int argc, char **argv)
 		}
 	}
 
+	if(!serverHost)
+	{
+		printf("Usage: %s -s <host>", argv[0]);
+		exit(1);
+	}
+
 	/* Fill in our other client's address */
 	memset(&serverAddr, 0, sizeof(struct sockaddr_in));
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_addr.s_addr = ResolveHost("localhost");//(serverHost ? ResolveHost(serverHost) : ResolveHost("localhost"));	// laziness
+	serverAddr.sin_addr.s_addr = ResolveHost(serverHost);	// laziness
 	serverAddr.sin_port = htons(35001);						// Static port
 
 	/* Create a thread to recieve all incoming messages */
 	HANDLE recvThread = CreateThread(0, 0, HandleRecieve, &sock, 0, 0);
 
 	HandleSend(&sock, &serverAddr);
+
+	if(closesocket(sock))
+		DieWithError("closesocket() failed");
+
+	WSACleanup();
 	
 	return(0);
 }

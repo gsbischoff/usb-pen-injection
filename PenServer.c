@@ -9,7 +9,7 @@ int
 main(int argc, char **argv)
 {
 	int ServerSock;
-	int ClientSock;
+	//int ClientSock;
 	struct sockaddr_in ServerAddr;
 	struct sockaddr_in ClientAddr;
 	char *ClientHost;					/* Server address in dotted quad */
@@ -91,7 +91,7 @@ main(int argc, char **argv)
 		Sleep(1);
 	}
 
-	closesocket(ClientSock);
+	//closesocket(ClientSock);
 	closesocket(ServerSock);
 
 	WSACleanup();

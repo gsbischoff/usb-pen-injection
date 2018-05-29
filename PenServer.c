@@ -30,16 +30,16 @@ main(int argc, char **argv)
 			ClientPort = atoi(ClientPortString);
 	}
 
-	memset(&ClientAddr, 0, sizeof(ClientAddr));
-	ClientAddr.sin_family		= AF_INET;
-	ClientAddr.sin_addr.s_addr	= ResolveHost(ClientHost);
-	ClientAddr.sin_port			= htons(ClientPort);
-
 	WSADATA data = { 0 };
 	WORD wVersionRequested = MAKEWORD(1,1);
 
 	if(WSAStartup(wVersionRequested, &data) < 0)
 		DieWithError("WSAStartup() failed");
+
+	memset(&ClientAddr, 0, sizeof(ClientAddr));
+	ClientAddr.sin_family		= AF_INET;
+	ClientAddr.sin_addr.s_addr	= ResolveHost(ClientHost);
+	ClientAddr.sin_port			= htons(ClientPort);
 
 	if((ServerSock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
 		DieWithError("socket() failed");

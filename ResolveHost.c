@@ -5,7 +5,8 @@ unsigned long ResolveHost(char *hostName)
 	struct hostent *host;
 	if ((host = gethostbyname(hostName)) == NULL)
 	{
-		printf("gethostbyname() failed\n");
+		DieWithError("gethostbyname() failed");
+		//printf("gethostbyname() failed\n");
 		exit(1);
 	}
 	else

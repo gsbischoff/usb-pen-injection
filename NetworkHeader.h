@@ -33,8 +33,10 @@ typedef struct
 	UINT32                     pointerId;
 	UINT32                     frameId;
 	POINTER_FLAGS              pointerFlags;
-	HANDLE                     sourceDevice;
-	HWND                       hwndTarget;
+	//HANDLE                     sourceDevice; // these two fields are of different sizes between machines
+	//HWND                       hwndTarget;
+	UINT64                     sourceDevice; 
+	UINT64                     hwndTarget;
 	POINT                      ptPixelLocation;
 	POINT                      ptHimetricLocation;
 	POINT                      ptPixelLocationRaw;

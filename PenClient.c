@@ -16,7 +16,7 @@ main(int argc, char **argv)
 	char *ServerPortString;				/* Server port */
 	unsigned short ServerPort; 		/* Server port */
 	unsigned int fromLen;				/* Length of client address data structure */
-	printf("Length of struct: %u %u %u %u %u %u %u %u\n",
+	printf("Length of struct: %zu %zu %zu %zu %zu %zu %zu %zu\n",
 		sizeof(POINTER_INPUT_TYPE         ),
 		sizeof(POINTER_FLAGS              ),
 		sizeof(HANDLE                     ),

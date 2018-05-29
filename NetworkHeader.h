@@ -27,22 +27,62 @@ void InjectTouch(POINTER_PEN_INFO PenInfo);
 
 #define	SENDTEST	40000000
 
-struct test
+typedef struct 
 {
-	union
-	{
-		char n[8];
-		struct
-		{
-			char a;
-			char b;
-			char c;
-			char d;
-			char e;
-			char f;
-			char g;
-			char h;
-		};
-	};
-};
+	POINTER_INPUT_TYPE         pointerType;
+	UINT32                     pointerId;
+	UINT32                     frameId;
+	POINTER_FLAGS              pointerFlags;
+	HANDLE                     sourceDevice;
+	HWND                       hwndTarget;
+	POINT                      ptPixelLocation;
+	POINT                      ptHimetricLocation;
+	POINT                      ptPixelLocationRaw;
+	POINT                      ptHimetricLocationRaw;
+	DWORD                      dwTime;
+	UINT32                     historyCount;
+	INT32                      inputData;
+	DWORD                      dwKeyStates;
+	UINT64                     PerformanceCount;
+	POINTER_BUTTON_CHANGE_TYPE ButtonChangeType;
+} POINTER_INFO_EX;
+
+typedef struct
+{
+  POINTER_INFO pointerInfo;
+  PEN_FLAGS    penFlags;
+  PEN_MASK     penMask;
+  UINT32       pressure;
+  UINT32       rotation;
+  INT32        tiltX;
+  INT32        tiltY;
+} POINTER_PEN_INFO_EX;
+
+// Size of pointer info
+#define __PI  \
+		sizeof(POINTER_INPUT_TYPE         )	+ \
+		sizeof(UINT32                     ) + \
+		sizeof(UINT32                     ) + \
+		sizeof(POINTER_FLAGS              ) + \
+		sizeof(HANDLE                     ) + \
+		sizeof(HWND                       ) + \
+		sizeof(POINT                      ) + \
+		sizeof(POINT                      ) + \
+		sizeof(POINT                      ) + \
+		sizeof(POINT                      ) + \
+		sizeof(DWORD                      ) + \
+		sizeof(UINT32                     ) + \
+		sizeof(INT32                      ) + \
+		sizeof(DWORD                      ) + \
+		sizeof(UINT64                     ) + \
+		sizeof(POINTER_BUTTON_CHANGE_TYPE )
+
+int
+PPINFO = __PI +
+		sizeof(PEN_FLAGS) +
+		sizeof(PEN_MASK ) +
+		sizeof(UINT32   ) +
+		sizeof(UINT32   ) +
+		sizeof(INT32    ) +
+		sizeof(INT32    );
 #endif

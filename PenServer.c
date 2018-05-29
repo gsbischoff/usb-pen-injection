@@ -8,16 +8,32 @@
 int
 main(int argc, char **argv)
 {
-	if(argc != 2)
-		printf("Usage: %s <port>\n", argv[0]);
-
 	int ServerSock;
 	int ClientSock;
 	struct sockaddr_in ServerAddr;
 	struct sockaddr_in ClientAddr;
-	int ServerPort;
+	char *ClientHost;					/* Server address in dotted quad */
+	char *ClientPortString;				/* Server port */
+	unsigned short ServerPort = 35000;
+	unsigned short ClientPort;
 
-	ServerPort = atoi(argv[1]);
+	if(argc != 2)
+	{
+		printf("Usage: %s [<client Host>[:<port>]]", argv[0]);
+		exit(1);
+	}
+	else
+	{
+		ClientHost = strtok(argv[1], ":");
+
+		if((ClientPortString = strtok(NULL, ":")) != NULL)
+			ClientPort = atoi(ClientPortString);
+	}
+
+	memset(&ClientAddr, 0, sizeof(ClientAddr));
+	ClientAddr.sin_family		= AF_INET;
+	ClientAddr.sin_addr.s_addr	= ResolveHost(ClientHost);
+	ClientAddr.sin_port			= htons(ClientPort);
 
 	WSADATA data = { 0 };
 	WORD wVersionRequested = MAKEWORD(1,1);

@@ -22,6 +22,7 @@
 #define	LISTENQ		1024	/* 2nd argument to listen() */
 #define SHORT_BUFFSIZE  100     /* For messages I know are short */
 void DieWithError(char *errorMessage); /*Error handling function */
+unsigned long ResolveHost(char *hostName);
 
 #define	SENDTEST	40000000
 

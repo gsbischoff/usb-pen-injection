@@ -41,7 +41,7 @@ main(int argc, char **argv)
 
 	memset(&ServerAddr, 0, sizeof(ServerAddr));
 	ServerAddr.sin_family		= AF_INET;
-	ServerAddr.sin_addr.s_addr	= inet_addr(ServerHost);
+	ServerAddr.sin_addr.s_addr	= ResolveHost(ServerHost); //inet_addr(ServerHost);
 	ServerAddr.sin_port			= ServerPort;
 
 	if(connect(sock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)

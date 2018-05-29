@@ -59,6 +59,7 @@ typedef struct
 } POINTER_PEN_INFO_EX;
 
 // Size of pointer info
+#ifndef __PI
 #define __PI  \
 		sizeof(POINTER_INPUT_TYPE         )	+ \
 		sizeof(UINT32                     ) + \
@@ -77,12 +78,12 @@ typedef struct
 		sizeof(UINT64                     ) + \
 		sizeof(POINTER_BUTTON_CHANGE_TYPE )
 
-int
-PPINFO = __PI +
-		sizeof(PEN_FLAGS) +
-		sizeof(PEN_MASK ) +
-		sizeof(UINT32   ) +
-		sizeof(UINT32   ) +
-		sizeof(INT32    ) +
-		sizeof(INT32    );
+#define PPINFO __PI + \
+		sizeof(PEN_FLAGS) + \
+		sizeof(PEN_MASK ) + \
+		sizeof(UINT32   ) + \
+		sizeof(UINT32   ) + \
+		sizeof(INT32    ) + \
+		sizeof(INT32    )
+#endif
 #endif

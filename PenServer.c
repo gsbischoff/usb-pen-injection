@@ -1,6 +1,9 @@
 #include "NetworkHeader.h"
 #include "PenIO.h"
 
+int
+initPoint(SOCKET s, struct sockaddr_in *c);
+
 // -----
 //   PenServer.c
 //		This program implements the connection from the serving
@@ -68,9 +71,11 @@ main(int argc, char **argv)
 
 	printf("Sending...\n");
 
-	POINT Last = { 0 };
+	initPoint(ServerSock, &ClientAddr);
 
-	for(;;)
+	//POINT Last = { 0 };
+
+/*	for(;;)
 	{
 		// Get current pointer info
 		POINT Point;
@@ -89,7 +94,7 @@ main(int argc, char **argv)
 
 		// Wait a bit before repeating...
 		Sleep(1);
-	}
+	}*/
 
 	//closesocket(ClientSock);
 	closesocket(ServerSock);

@@ -10,15 +10,16 @@ main(int argc, char **argv)
 {
 	int sock;						/* Socket descriptor for client */
 	struct sockaddr_in ServerAddr;	/* Local address */
-	struct sockaddr_in FromAddr;	/* Local address */
+	struct sockaddr_in ClientAddr;
+	struct sockaddr_in FromAddr;
 	char *ServerHost;					/* Server address in dotted quad */
 	char *ServerPortString;				/* Server port */
 	unsigned short ServerPort; 		/* Server port */
-	unsigned int clntLen;				/* Length of client address data structure */
+	unsigned int fromLen;				/* Length of client address data structure */
 
 	if(argc != 2)
 	{
-		printf("Usage: %s [<server IP>[:<port>]]", argv[0]);
+		printf("Usage: %s [<server Host>[:<port>]]", argv[0]);
 		exit(1);
 	}
 	else
@@ -29,23 +30,30 @@ main(int argc, char **argv)
 			ServerPort = atoi(ServerPortString);
 	}
 
+
 	struct WSAData data = { 0 };
 	WORD wVersionRequested = MAKEWORD(1,1);
 
 	if(WSAStartup(wVersionRequested, &data))
 		DieWithError("WSAStartup() failed");
-
-	//if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-	if((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-		DieWithError("sock() failed");
-
+		
+	/* Fill in serving address */
 	memset(&ServerAddr, 0, sizeof(ServerAddr));
 	ServerAddr.sin_family		= AF_INET;
 	ServerAddr.sin_addr.s_addr	= ResolveHost(ServerHost); //inet_addr(ServerHost);
 	ServerAddr.sin_port			= htons(ServerPort);
 
-	//if(connect(sock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
-	//	DieWithError("connect() failed");
+	if((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
+		DieWithError("socket() failed");
+
+	/* Fill in our address */
+	memset(&ClientAddr, 0, sizeof(ClientAddr));
+	ClientAddr.sin_family		= AF_INET;
+	ClientAddr.sin_addr.s_addr	= htonl(INADDR_ANY); //inet_addr(ServerHost);
+	ClientAddr.sin_port			= htons(ServerPort);
+
+	if(bind(sock, (struct sockaddr *) &ClientAddr, sizeof(ClientAddr)) < 0)
+		DieWithError("bind() failed");
 
 	//POINTER_PEN_INFO recvBuffer = {0};
 
@@ -57,17 +65,16 @@ main(int argc, char **argv)
 		Point.x = 0;
 		Point.y = 0;
 
-		int FromLen = sizeof(struct sockaddr);
+		fromLen = sizeof(FromAddr);
 
 		if(recvfrom(sock, (char *) &Point, sizeof(Point), 0,
-			(struct sockaddr *) &FromAddr, &FromLen) < 0)
+			(struct sockaddr *) &FromAddr, &fromLen) < 0)
 			DieWithError("recvfrom() failed");
 
-		//if(recv(sock, (char *) &recvBuffer, sizeof(POINTER_PEN_INFO), 0) <= 0)
-		//	break;
 
 		//InjectTouch(recvBuffer);
-		SetCursorPos(Point.x, Point.y);
+		if(FromAddr.sin_addr.s_addr == ServerAddr.sin_addr.s_addr)
+			SetCursorPos(Point.x, Point.y);
 	}
 
 	closesocket(sock);

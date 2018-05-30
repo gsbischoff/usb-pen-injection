@@ -56,7 +56,7 @@ main(int argc, char **argv)
 		DieWithError("bind() failed");
 
 	POINTER_PEN_INFO recvBuffer = {0};
-	char expandedBuf[178];
+	unsigned char expandedBuf[178];
 
 	//POINT Point;
 
@@ -74,7 +74,12 @@ main(int argc, char **argv)
 			DieWithError("recvfrom() failed");
 
 		compress(expandedBuf, &recvBuffer);
-		printf(".");
+		unsigned long long chk = 0;
+		for(int i = 0; i < 178; ++i)
+			chk += expandedBuf[i];
+
+		printf("%llu  ", chk);
+		//printf(".");
 
 		if(FromAddr.sin_addr.s_addr == ServerAddr.sin_addr.s_addr)
 			InjectTouch(recvBuffer);
@@ -94,8 +99,8 @@ InjectTouch(POINTER_PEN_INFO PenInfo)
 	{
 		POINTER_TOUCH_INFO touchInfo = {0};
 
-		memcpy(&touchInfo.pointerInfo, &PenInfo.pointerInfo, sizeof(POINTER_INFO));
-	/*	touchInfo.pointerInfo.pointerType			 = PenInfo.pointerInfo.pointerType;				
+		//memcpy(&touchInfo.pointerInfo, &PenInfo.pointerInfo, sizeof(POINTER_INFO));
+		touchInfo.pointerInfo.pointerType			 = PenInfo.pointerInfo.pointerType;				
 		touchInfo.pointerInfo.pointerId				 = PenInfo.pointerInfo.pointerId;				
 		touchInfo.pointerInfo.frameId				 = PenInfo.pointerInfo.frameId;					
 		touchInfo.pointerInfo.pointerFlags			 = PenInfo.pointerInfo.pointerFlags;				
@@ -110,7 +115,7 @@ InjectTouch(POINTER_PEN_INFO PenInfo)
 		touchInfo.pointerInfo.InputData				 = PenInfo.pointerInfo.InputData;				
 		touchInfo.pointerInfo.dwKeyStates			 = PenInfo.pointerInfo.dwKeyStates;				
 		touchInfo.pointerInfo.PerformanceCount		 = PenInfo.pointerInfo.PerformanceCount;			
-		touchInfo.pointerInfo.ButtonChangeType		 = PenInfo.pointerInfo.ButtonChangeType;	*/		
+		touchInfo.pointerInfo.ButtonChangeType		 = PenInfo.pointerInfo.ButtonChangeType;			
 
 		printf(",");
 		// Don't have penFlag for eraser! Touch has no flags!

@@ -58,8 +58,7 @@ main(int argc, char **argv)
 	POINTER_PEN_INFO recvBuffer = {0};
 	unsigned char expandedBuf[178];
 
-	//POINT Point;
-
+	POINT LastptPixelLocation;
 
 	// TODO: test recieving cursor movements over UDP, then change to sending the PEN_INFO struct
 	for(;;)
@@ -73,7 +72,7 @@ main(int argc, char **argv)
 			(struct sockaddr *) &FromAddr, &fromLen) < 0)
 			DieWithError("recvfrom() failed");
 
-		compress(expandedBuf, &recvBuffer);
+		deserialize(expandedBuf, &recvBuffer);
 		unsigned long long chk = 0;
 		for(int i = 0; i < 178; ++i)
 			chk += expandedBuf[i];
@@ -82,7 +81,7 @@ main(int argc, char **argv)
 		//printf(".");
 
 		if(FromAddr.sin_addr.s_addr == ServerAddr.sin_addr.s_addr)
-			InjectTouch(recvBuffer);
+			InjectTouch(recvBuffer, &LastptPixelLocation);
 			//SetCursorPos(Point.x, Point.y);
 	}
 
@@ -93,7 +92,7 @@ main(int argc, char **argv)
 }
 
 void
-InjectTouch(POINTER_PEN_INFO PenInfo)
+InjectTouch(POINTER_PEN_INFO PenInfo, POINT *Lastpt)
 {
 	if(InitializeTouchInjection(1, TOUCH_FEEDBACK_DEFAULT))
 	{
@@ -101,21 +100,41 @@ InjectTouch(POINTER_PEN_INFO PenInfo)
 
 		//memcpy(&touchInfo.pointerInfo, &PenInfo.pointerInfo, sizeof(POINTER_INFO));
 		touchInfo.pointerInfo.pointerType			 = PenInfo.pointerInfo.pointerType;				
-		touchInfo.pointerInfo.pointerId				 = PenInfo.pointerInfo.pointerId;				
-		touchInfo.pointerInfo.frameId				 = PenInfo.pointerInfo.frameId;					
+//		touchInfo.pointerInfo.pointerId				 = PenInfo.pointerInfo.pointerId;				
+//		touchInfo.pointerInfo.frameId				 = PenInfo.pointerInfo.frameId;		 			
 		touchInfo.pointerInfo.pointerFlags			 = PenInfo.pointerInfo.pointerFlags;				
 		touchInfo.pointerInfo.sourceDevice 			 = PenInfo.pointerInfo.sourceDevice; 			
-		touchInfo.pointerInfo.hwndTarget			 = PenInfo.pointerInfo.hwndTarget;				
+//		touchInfo.pointerInfo.hwndTarget			 = PenInfo.pointerInfo.hwndTarget;				
 		touchInfo.pointerInfo.ptPixelLocation		 = PenInfo.pointerInfo.ptPixelLocation;			
 		touchInfo.pointerInfo.ptHimetricLocation	 = PenInfo.pointerInfo.ptHimetricLocation;		
 		touchInfo.pointerInfo.ptPixelLocationRaw	 = PenInfo.pointerInfo.ptPixelLocationRaw;		
 		touchInfo.pointerInfo.ptHimetricLocationRaw  = PenInfo.pointerInfo.ptHimetricLocationRaw;	
-		touchInfo.pointerInfo.dwTime				 = PenInfo.pointerInfo.dwTime;					
-		touchInfo.pointerInfo.historyCount			 = PenInfo.pointerInfo.historyCount;				
-		touchInfo.pointerInfo.InputData				 = PenInfo.pointerInfo.InputData;				
-		touchInfo.pointerInfo.dwKeyStates			 = PenInfo.pointerInfo.dwKeyStates;				
-		touchInfo.pointerInfo.PerformanceCount		 = PenInfo.pointerInfo.PerformanceCount;			
-		touchInfo.pointerInfo.ButtonChangeType		 = PenInfo.pointerInfo.ButtonChangeType;			
+		touchInfo.pointerInfo.dwTime				 = 0; //PenInfo.pointerInfo.dwTime;					
+//		touchInfo.pointerInfo.historyCount			 = PenInfo.pointerInfo.historyCount;				
+//		touchInfo.pointerInfo.InputData				 = PenInfo.pointerInfo.InputData;				
+//		touchInfo.pointerInfo.dwKeyStates			 = PenInfo.pointerInfo.dwKeyStates;				
+		touchInfo.pointerInfo.PerformanceCount		 = 0; //PenInfo.pointerInfo.PerformanceCount;			
+//		touchInfo.pointerInfo.ButtonChangeType		 = PenInfo.pointerInfo.ButtonChangeType;
+
+		/* When POINTER_FLAG_UP is set, ptPixelLocation of POINTER_INFO
+		   should be the same as the value of the previous touch injection
+		   			frame with POINTER_FLAG_UPDATE. */
+		if(touchInfo.pointerInfo.pointerFlags & POINTER_FLAG_UPDATE)
+		{
+			printf("Assigning last!\n");
+			Lastpt->x = touchInfo.pointerInfo.ptPixelLocation.x;
+			Lastpt->y = touchInfo.pointerInfo.ptPixelLocation.y;
+		}
+		if(touchInfo.pointerInfo.pointerFlags & POINTER_FLAG_UP)
+		{
+			if(Lastpt->x != touchInfo.pointerInfo.ptPixelLocation.x ||
+			   Lastpt->y != touchInfo.pointerInfo.ptPixelLocation.y)
+			{
+				printf("Tripped this.\n");
+				Lastpt->x = touchInfo.pointerInfo.ptPixelLocation.x;
+				Lastpt->y = touchInfo.pointerInfo.ptPixelLocation.y;
+			}
+		}			
 
 		printf(",");
 		// Don't have penFlag for eraser! Touch has no flags!

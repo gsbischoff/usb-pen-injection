@@ -64,6 +64,7 @@ main(int argc, char **argv)
 		DieWithError("bind() failed");
 
 	POINTER_PEN_INFO recvBuffer = {0};
+	char expandedBuf[178];
 
 	//POINT Point;
 
@@ -76,13 +77,15 @@ main(int argc, char **argv)
 
 		fromLen = sizeof(FromAddr);
 
-		if(recvfrom(sock, (char *) &recvBuffer, sizeof(recvBuffer), 0,
+		if(recvfrom(sock, expandedBuf, sizeof(expandedBuf), 0,
 			(struct sockaddr *) &FromAddr, &fromLen) < 0)
 			DieWithError("recvfrom() failed");
 
+		//compress(expandedBuf, &recvBuffer);
+		printf(".");
 
-		if(FromAddr.sin_addr.s_addr == ServerAddr.sin_addr.s_addr)
-			InjectTouch(recvBuffer);
+		//if(FromAddr.sin_addr.s_addr == ServerAddr.sin_addr.s_addr)
+			//InjectTouch(recvBuffer);
 			//SetCursorPos(Point.x, Point.y);
 	}
 

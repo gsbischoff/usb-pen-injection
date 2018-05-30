@@ -24,7 +24,7 @@ initPoint(SOCKET s, struct sockaddr_in *c)
 	WindowClass.lpszClassName = "WindowClass";
 
 
-	printf("ptr info siz: %u\n", sizeof(POINTER_INFO));
+	printf("ptr info siz: %zu\n", sizeof(POINTER_INFO));
 	if(RegisterClass(&WindowClass))
 	{
 		HWND WindowHandle = 
@@ -104,10 +104,11 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 			   && GetPointerPenInfo(pi, &Info))
 			{
 				// PointerInfo struct + pressure (set touchmask + flags appropriately)
+				unsigned char *spreadStruct = expand(&Info);
 
 				// sendInput(&Info, ...)
 				// Or add to thread's work queue (maybe use GetPointerPenInfoHistory()?)
-				if(sendto(sendSock, (char *) &Info, sizeof(Info), 0,
+				if(sendto(sendSock, spreadStruct, 178, 0,
 					(struct sockaddr *) clnt, sizeof(struct sockaddr)) < 0)
 					DieWithError("sendto() failed");
 

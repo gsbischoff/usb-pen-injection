@@ -112,6 +112,12 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 					(struct sockaddr *) clnt, sizeof(struct sockaddr)) < 0)
 					DieWithError("sendto() failed");
 
+				unsigned long long chk = 0;
+				for(int i = 0; i < 178; ++i)
+					chk += spreadStruct[i];
+
+				printf("%llu  ", chk);
+
 				/* Free memory allocated in expand() */
 				free(spreadStruct);
 			}

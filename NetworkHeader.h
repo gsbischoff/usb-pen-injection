@@ -23,16 +23,16 @@
 #define SHORT_BUFFSIZE  100     /* For messages I know are short */
 void DieWithError(char *errorMessage); /*Error handling function */
 unsigned long ResolveHost(char *hostName);
-void InjectTouch(POINTER_PEN_INFO PenInfo);
+void InjectTouch(POINTER_PEN_INFO PenInfo, POINT *last);
 
 /* Serialization functions/macros */
 unsigned char *serialize_field(unsigned char *destBuffer, void *source, size_t size, size_t align);
-unsigned char *unserialize_field(unsigned char *srcBuffer, void *dest, size_t size, size_t align);
+unsigned char *deserialize_field(unsigned char *srcBuffer, void *dest, size_t size, size_t align);
 unsigned char *serialize(POINTER_PEN_INFO *Info);
 void           deserialize(unsigned char *buffer, POINTER_PEN_INFO *Info);
 
 #define pad(a, b) serialize_field(a, &b, sizeof(b), 8)
-#define unpad(a, b) unserialize_field(a, &b, sizeof(b), 8)
+#define unpad(a, b) deserialize_field(a, &b, sizeof(b), 8)
 
 //#define serialize(a, b) serialize_field(a, &b, sizeof(b), 0)
 //#define unserialize(a, b) unserialize_field(a, &b, sizeof(b), 0)

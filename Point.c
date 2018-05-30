@@ -104,7 +104,7 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 			   && GetPointerPenInfo(pi, &Info))
 			{
 				// PointerInfo struct + pressure (set touchmask + flags appropriately)
-				unsigned char *spreadStruct = expand(&Info);
+				unsigned char *spreadStruct = serialize(&Info);
 
 				// sendInput(&Info, ...)
 				// Or add to thread's work queue (maybe use GetPointerPenInfoHistory()?)

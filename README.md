@@ -11,7 +11,7 @@ The initial implementation uses the UDP sockets from the Winsock API (with Winso
 
 **Point.c** is for capturing Pen input using Pointer APIs. Currently, only **WM_POINTER** messages
 
-**Compand.c** contains functions for serializing and deserializing the **POINTER_PEN_INFO** struct before and after transmission.
+**Serial.c** contains functions for serializing and deserializing the **POINTER_PEN_INFO** struct before and following transmission.
 
 **DieWithError.c** and **ResolveHost.c** contain socket helper functions to print out correctly-formatted WinSock error messages and resolve input hostnames into IP addresses, respectively.
 

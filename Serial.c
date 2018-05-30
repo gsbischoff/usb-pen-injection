@@ -1,9 +1,9 @@
 #include "NetworkHeader.h"
 
 // -----
-//   Compand.c
-//		This program pads and changes into network order
-//			the fields of a POINTER_PEN_INFO struct
+//   Serial.c
+//		This program serializes a POINTER_PEN_INFO 
+//			struct by padding its fields
 
 
 // -----
@@ -25,14 +25,18 @@ serialize_field(unsigned char *destBuffer, void *source, size_t size, size_t ali
 	return destBuffer + align;
 }
 
+// -----
+//   serialize_field
+//		Copies serially placed fields of 'size' bytes with 'align' 
+//			bytes alignment from 'srcBuffer' into  'dest'
 unsigned char *
-unserialize_field(unsigned char *srcBuffer, void *dest, size_t size, size_t align)
-{				// Take from here ^^^^^, put  ^^^^, this big ^^, aligned ^^^^
+deserialize_field(unsigned char *srcBuffer, void *dest, size_t size, size_t align)
+{
 	if(!align)
 		align = size;
 
 	// Only primitives
-	char *cVal = dest; // (char *)
+	char *cVal = dest;
 
 	for(int byte = 0; byte < size; ++byte)
 		cVal[byte] = srcBuffer[byte];
@@ -41,7 +45,7 @@ unserialize_field(unsigned char *srcBuffer, void *dest, size_t size, size_t alig
 }
 
 void
-compress(unsigned char *buffer, POINTER_PEN_INFO *Info)
+deserialize(unsigned char *buffer, POINTER_PEN_INFO *Info)
 {
 	unsigned char *ptr;
 	if(!buffer)
@@ -83,11 +87,11 @@ compress(unsigned char *buffer, POINTER_PEN_INFO *Info)
 }
 
 unsigned char *
-expand(POINTER_PEN_INFO *Info)
+serialize(POINTER_PEN_INFO *Info)
 {
 	// Since we are
 	// 22 fields, 8 bytes each = 176 bytes + 2 bytes for 'byte order check field'
-	unsigned char *buf = malloc(178); //buf[178];
+	unsigned char *buf = malloc(178);
 	unsigned char *ptr;
 
 	buf[0] = 0xff;
@@ -123,24 +127,3 @@ expand(POINTER_PEN_INFO *Info)
 	//printf("ptr is %p\n", (void *) (ptr - buf));
 	return(buf);
 }
-
-/*
-int
-main()
-{
-	POINTER_PEN_INFO pen = {0};
-	pen.pressure = 500;
-	printf("Pressure is at %u [initially]\n", pen.pressure);
-
-	unsigned char *buf = expand(&pen);
-
-	POINTER_PEN_INFO outPen = {0};
-
-	compress(buf, &outPen);
-
-	printf("Pressure is at %u\n", outPen.pressure);
-
-
-	free(buf);
-	return(0);
-}*/

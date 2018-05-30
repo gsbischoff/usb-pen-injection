@@ -25,8 +25,19 @@ void DieWithError(char *errorMessage); /*Error handling function */
 unsigned long ResolveHost(char *hostName);
 void InjectTouch(POINTER_PEN_INFO PenInfo);
 
-#define	SENDTEST	40000000
+unsigned char *serialize_field(unsigned char *destBuffer, void *source, size_t size, size_t align);
+unsigned char *unserialize_field(unsigned char *srcBuffer, void *dest, size_t size, size_t align);
+unsigned char *expand(POINTER_PEN_INFO *Info);
+void compress(unsigned char *buffer, POINTER_PEN_INFO *Info);
 
+#define serialize(a, b) serialize_field(a, &b, sizeof(b), 0)
+#define pad(a, b) serialize_field(a, &b, sizeof(b), 8)
+
+#define unserialize(a, b) unserialize_field(a, &b, sizeof(b), 0)
+#define unpad(a, b) unserialize_field(a, &b, sizeof(b), 8)
+
+#define	SENDTEST	40000000
+/*
 typedef struct 
 {
 	POINTER_INPUT_TYPE         pointerType;
@@ -51,13 +62,33 @@ typedef struct
 
 typedef struct
 {
-  POINTER_INFO pointerInfo;
-  PEN_FLAGS    penFlags;
-  PEN_MASK     penMask;
-  UINT32       pressure;
-  UINT32       rotation;
-  INT32        tiltX;
-  INT32        tiltY;
+	struct 
+	{
+		POINTER_INPUT_TYPE         pointerType;
+		UINT32                     pointerId;
+		UINT32                     frameId;
+		POINTER_FLAGS              pointerFlags;
+		//HANDLE                     sourceDevice; // these two fields are of different sizes between machines
+		//HWND                       hwndTarget;
+		UINT64                     sourceDevice; 
+		UINT64                     hwndTarget;
+		POINT                      ptPixelLocation;
+		POINT                      ptHimetricLocation;
+		POINT                      ptPixelLocationRaw;
+		POINT                      ptHimetricLocationRaw;
+		DWORD                      dwTime;
+		UINT32                     historyCount;
+		INT32                      inputData;
+		DWORD                      dwKeyStates;
+		UINT64                     PerformanceCount;
+		POINTER_BUTTON_CHANGE_TYPE ButtonChangeType;
+	} POINTER_INFO_EX;
+	PEN_FLAGS    penFlags;
+	PEN_MASK     penMask;
+	UINT32       pressure;
+	UINT32       rotation;
+	INT32        tiltX;
+	INT32        tiltY;
 } POINTER_PEN_INFO_EX;
 
 // Size of pointer info
@@ -87,5 +118,5 @@ typedef struct
 		sizeof(UINT32   ) + \
 		sizeof(INT32    ) + \
 		sizeof(INT32    )
-#endif
+#endif*/
 #endif

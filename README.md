@@ -3,13 +3,17 @@
 Uses the Windows API to slave the input of a pressure sensitive stylus from a Microsoft Surface and pipe it
 over USB (or some other protocol) for input on a separate computer without a touch display. (Work-In-Progress)
 
-The initial implementation uses the sockets API (with Winsock). UDP sockets, USB, or Bluetooth to come later.
+The initial implementation uses the UDP sockets from the Winsock API (with Winsock). USB or Bluetooth to come later.
 
 ## Contents
 
-**PenClient.c** and **PenServer.c** contain the sources of the program to recieve and inject input; and to capture and send input over a designated protocol. Currently, these send cursor movements over TCP/IP stream sockets as "boilerplate" -- they will be modified to use pen input and send the input over other means later.
+**PenClient.c** and **PenServer.c** contain the sources of the program to recieve and inject input; and to capture and send input over a designated protocol. Currently, these send and recieve pen input using datagram/UDP sockets.
 
-**Point.c** is for capturing Pen input using Pointer APIs. This is to be joined with **PenServer.c**.
+**Point.c** is for capturing Pen input using Pointer APIs. Currently, only **WM_POINTER** messages
+
+**Compand.c** contains functions for serializing and deserializing the **POINTER_PEN_INFO** struct before and after transmission.
+
+**DieWithError.c** and **ResolveHost.c** contain socket helper functions to print out correctly-formatted WinSock error messages and resolve input hostnames into IP addresses, respectively.
 
 ### Testbeds
 

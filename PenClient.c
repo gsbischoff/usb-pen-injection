@@ -16,15 +16,7 @@ main(int argc, char **argv)
 	char *ServerPortString;				/* Server port */
 	unsigned short ServerPort; 		/* Server port */
 	unsigned int fromLen;				/* Length of client address data structure */
-	printf("Length of struct: %zu %zu %zu %zu %zu %zu %zu %zu\n",
-		sizeof(POINTER_INPUT_TYPE         ),
-		sizeof(POINTER_FLAGS              ),
-		sizeof(HANDLE                     ),
-		sizeof(HWND                       ),
-		sizeof(POINT                      ),
-		sizeof(POINTER_BUTTON_CHANGE_TYPE ),
-		sizeof(PEN_FLAGS),
-		sizeof(PEN_MASK ));
+
 	if(argc != 2)
 	{
 		printf("Usage: %s [<server Host>[:<port>]]", argv[0]);

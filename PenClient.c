@@ -81,11 +81,11 @@ main(int argc, char **argv)
 			(struct sockaddr *) &FromAddr, &fromLen) < 0)
 			DieWithError("recvfrom() failed");
 
-		//compress(expandedBuf, &recvBuffer);
+		compress(expandedBuf, &recvBuffer);
 		printf(".");
 
-		//if(FromAddr.sin_addr.s_addr == ServerAddr.sin_addr.s_addr)
-			//InjectTouch(recvBuffer);
+		if(FromAddr.sin_addr.s_addr == ServerAddr.sin_addr.s_addr)
+			InjectTouch(recvBuffer);
 			//SetCursorPos(Point.x, Point.y);
 	}
 
@@ -101,12 +101,34 @@ InjectTouch(POINTER_PEN_INFO PenInfo)
 	if(InitializeTouchInjection(1, TOUCH_FEEDBACK_DEFAULT))
 	{
 		POINTER_TOUCH_INFO touchInfo = {0};
-		memcpy(&touchInfo.pointerInfo, &PenInfo.pointerInfo, sizeof(POINTER_INFO));
 
+		memcpy(&touchInfo.pointerInfo, &PenInfo.pointerInfo, sizeof(POINTER_INFO));
+	/*	touchInfo.pointerInfo.pointerType			 = PenInfo.pointerInfo.pointerType;				
+		touchInfo.pointerInfo.pointerId				 = PenInfo.pointerInfo.pointerId;				
+		touchInfo.pointerInfo.frameId				 = PenInfo.pointerInfo.frameId;					
+		touchInfo.pointerInfo.pointerFlags			 = PenInfo.pointerInfo.pointerFlags;				
+		touchInfo.pointerInfo.sourceDevice 			 = PenInfo.pointerInfo.sourceDevice; 			
+		touchInfo.pointerInfo.hwndTarget			 = PenInfo.pointerInfo.hwndTarget;				
+		touchInfo.pointerInfo.ptPixelLocation		 = PenInfo.pointerInfo.ptPixelLocation;			
+		touchInfo.pointerInfo.ptHimetricLocation	 = PenInfo.pointerInfo.ptHimetricLocation;		
+		touchInfo.pointerInfo.ptPixelLocationRaw	 = PenInfo.pointerInfo.ptPixelLocationRaw;		
+		touchInfo.pointerInfo.ptHimetricLocationRaw  = PenInfo.pointerInfo.ptHimetricLocationRaw;	
+		touchInfo.pointerInfo.dwTime				 = PenInfo.pointerInfo.dwTime;					
+		touchInfo.pointerInfo.historyCount			 = PenInfo.pointerInfo.historyCount;				
+		touchInfo.pointerInfo.InputData				 = PenInfo.pointerInfo.InputData;				
+		touchInfo.pointerInfo.dwKeyStates			 = PenInfo.pointerInfo.dwKeyStates;				
+		touchInfo.pointerInfo.PerformanceCount		 = PenInfo.pointerInfo.PerformanceCount;			
+		touchInfo.pointerInfo.ButtonChangeType		 = PenInfo.pointerInfo.ButtonChangeType;	*/		
+
+		printf(",");
 		// Don't have penFlag for eraser! Touch has no flags!
 		touchInfo.touchMask = TOUCH_MASK_PRESSURE; // only injecting pressure
 		touchInfo.pressure = PenInfo.pressure;
 
-		InjectTouchInput(1, &touchInfo);
+		if(!InjectTouchInput(1, &touchInfo))
+		{
+			DieWithError("InjectTouchInput() failed");
+			exit(1);
+		}
 	}
 }

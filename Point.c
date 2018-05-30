@@ -112,6 +112,8 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 					(struct sockaddr *) clnt, sizeof(struct sockaddr)) < 0)
 					DieWithError("sendto() failed");
 
+				/* Free memory allocated in expand() */
+				free(spreadStruct);
 			}
 
 			Result = DefWindowProc(Window, Message, WParam, LParam);

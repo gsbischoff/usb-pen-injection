@@ -23,7 +23,7 @@
 #define SHORT_BUFFSIZE  100     /* For messages I know are short */
 void DieWithError(char *errorMessage); /*Error handling function */
 unsigned long ResolveHost(char *hostName);
-void InjectTouch(POINTER_PEN_INFO PenInfo, POINT *last);
+void InjectTouch(POINTER_PEN_INFO PenInfo, POINT *last, POINTER_FLAGS *lastMask);
 
 /* Serialization functions/macros */
 unsigned char *serialize_field(unsigned char *destBuffer, void *source, size_t size, size_t align);

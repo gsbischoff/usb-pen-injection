@@ -46,7 +46,7 @@ build.bat IOFinal.c
 
  * See if WinTab has APIs for injection
 
-Switch to using Pointer messages (can we capture all messages still as with *INPUTSINK*? Register pointers?)
+Switch to using Pointer messages (~~can we capture all messages still as with *INPUTSINK*? Register pointers?~~ No.)
 
  * **RegisterPointerDeviceNotifications()** allows *message-windows* to recieve inputs telling when a pointer in put in range; however, the *pointerId* that is returned from **GET_POINTERID_WPARAM()** on those messages is invalid. **ONLY** when retrieving it through a **WM_POINTERUPDATE** message can you call **GetPointerPenInfo()**. Additionally, *pointerId*s are unique, each time the pen leaves and comes back in range, a new *pointerId* is returned.
 

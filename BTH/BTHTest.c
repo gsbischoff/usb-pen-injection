@@ -29,12 +29,8 @@ main(int argc, char **argv)
 		DieWithError("BluetoothFindFirstRadio() failed");
 
 	// Success
-	DWORD res;
-	if((res = BluetoothGetRadioInfo(Radio, &RadioInfo)) != ERROR_SUCCESS)
-	{
-		printf("Got %u\n", res);
+	if(BluetoothGetRadioInfo(Radio, &RadioInfo) != ERROR_SUCCESS)
 		DieWithError("BluetoothGetRadioInfo() failed");
-	}
 
 	BluetoothFindRadioClose(RadioFind);
 	CloseHandle(Radio);

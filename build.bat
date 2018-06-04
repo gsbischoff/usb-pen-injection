@@ -1,6 +1,6 @@
 @echo off
 
-set CompileLibs=DieWithError.c ResolveHost.c Point.c Serial.c ws2_32.lib User32.lib
+set CompileLibs=NetworkUtils.c Point.c Serial.c ws2_32.lib User32.lib
 set CompileFlags=-nologo
 
 set FileToBuild=%1

@@ -6,7 +6,6 @@ unsigned long ResolveHost(char *hostName)
 	if ((host = gethostbyname(hostName)) == NULL)
 	{
 		DieWithError("gethostbyname() failed");
-		//printf("gethostbyname() failed\n");
 		exit(1);
 	}
 	else

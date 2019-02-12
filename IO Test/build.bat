@@ -1,6 +1,6 @@
 @echo off
 
-set CompileLibs=User32.lib
+set CompileLibs=User32.lib Hid.lib
 set CompileFlags=-nologo
 
 set FileToBuild=%1

@@ -84,7 +84,8 @@ main()
 	CURSORINFO CursorInfo;
 	CursorInfo.cbSize = sizeof(CURSORINFO);
 
-#if 1
+	// This block attempts to open RIDs using createfile
+#if 0
 	GetCursorInfo(&CursorInfo);
 
 	//Try to get mouse RI
@@ -135,6 +136,8 @@ main()
 		free(name);
 	}
 #elif 0
+	// Gets a list of RIDs and counts # of mice. Additionally, registers 2 RIDs
+	// to a window (mouse and pointer), of which only mouse works :(
 	UINT32 deviceCount;
 
 	if(GetPointerDevices(&deviceCount, 0) == 0)
@@ -184,6 +187,8 @@ main()
 
 			RAWINPUTDEVICELIST *RIDeviceList = malloc(NumDevices * sizeof(RAWINPUTDEVICELIST));
 			GetRawInputDeviceList(RIDeviceList, &NumDevices, sizeof(RAWINPUTDEVICELIST));
+
+			printf("Got back %d devices\n", NumDevices);
 
 			// Count number of decives [specifcally mice] to add
 			int NumMice = 0;
@@ -298,20 +303,19 @@ main()
 		{
 			case RIM_TYPEMOUSE:
 			{
-				printf("MOUSE\n");
+/*				printf("MOUSE\n");
 				printf("\tNAME:                  %s\n", Name);
 
 				printf("\tdwId:                  %d\n", DeviceInfo.mouse.dwId);
 				printf("\tdwNumberOfButtons:     %d\n", DeviceInfo.mouse.dwNumberOfButtons);
 				printf("\tdwSampleRate:          %d\n", DeviceInfo.mouse.dwSampleRate);
 				printf("\tfHasHorizontalWheel:   %d\n", DeviceInfo.mouse.fHasHorizontalWheel);
-
-				
+*/
 			} break;
 
 			case RIM_TYPEKEYBOARD:
 			{
-				printf("KEYBOARD\n");
+/*				printf("KEYBOARD\n");
 				printf("\tNAME:                     %s\n", Name);
 
 				printf("\tdwType:                   %d\n", DeviceInfo.keyboard.dwType);
@@ -320,6 +324,7 @@ main()
 				printf("\tdwNumberOfFunctionKeys:   %d\n", DeviceInfo.keyboard.dwNumberOfFunctionKeys);
 				printf("\tdwNumberOfIndicators:     %d\n", DeviceInfo.keyboard.dwNumberOfIndicators);
 				printf("\tdwNumberOfKeysTotal:      %d\n", DeviceInfo.keyboard.dwNumberOfKeysTotal);
+*/
 			} break;
 			
 			default:	// RIM_TYPEHID
@@ -377,7 +382,7 @@ main()
 			} break;
 		}
 		putc('\n', stdout);
-
+/*
 		// Try reopening device
 		HANDLE dev = CreateFile(Name, GENERIC_READ, FILE_SHARE_READ, NULL, 
 								OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -409,7 +414,7 @@ main()
 			DWORD err = GetLastError();
 			printerr(err);
 		}
-
+*/
 		free(Name);
 	}
 

@@ -42,7 +42,7 @@ main(int argc, char **argv)
 			RAWINPUTDEVICE RID[1] = {0};
 			
 			// Usage page & usage of Mouse
-			RID[0].usUsagePage = 0x1;
+			RID[0].usUsagePage = 0xd;
 			RID[0].usUsage = 0x2; // mouse : 0x2, pointer: 0x1
 			RID[0].dwFlags = RIDEV_INPUTSINK; //RIDEV_INPUTSINK;
 			RID[0].hwndTarget = WindowHandle;
@@ -159,44 +159,6 @@ WindowProc(	HWND Window,
 			}
 			printf("pssst\n");
 
-			if(1)
-			{
-				printf("In test!\n");
-				HRAWINPUT param = (HRAWINPUT) LParam;
-				RAWINPUT *maybe = GlobalLock(param);
-
-				if(!maybe)
-				{
-					DWORD err = GetLastError();
-					printerr(err);
-
-					//RAWINPUT *maybe2 = LocalLock(param);
-
-					if(!HeapLock(param))
-					{
-						DWORD err2 = GetLastError();
-						printerr(err2);
-
-					}
-
-				}
-				else
-				{
-					char *m = (char *) maybe;
-
-					printf("STILL in test!\n");
-
-					for(int i = 0; i < InputSize; ++i)
-						printf("%02x", m[i]);
-				}
-
-
-				printf("End test!\n");
-
-				// Test for equality here
-
-				//GlobalHandle(param);
-			}
 
 			printf("LParam: %d\n", (UINT) LParam);
 			

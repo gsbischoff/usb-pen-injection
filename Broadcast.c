@@ -37,6 +37,7 @@ main(int argc, char **argv)
         clientAddr.sin_family = AF_INET;
         clientAddr.sin_addr.s_addr = htonl(INADDR_ANY); // ResolveHost("localhost"); // laziness
         clientAddr.sin_port = htons(35001);        // Static port
+        printf("Binding to %s with port %d\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 
         if(bind(sock, (struct sockaddr *) &clientAddr, sizeof(struct sockaddr)) < 0)
             DieWithError("bind() failed");
@@ -85,6 +86,8 @@ HandleInit(SOCKET sock, int isServer)
     {
         char recvBuf[2];
         int recvMsgSize;
+
+        printf("Waiting to recieve...\n");
         /* Server will wait for the broadcast signal */
         if((recvMsgSize = recvfrom(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&fromAddr, &fromLen)) < 0)
             DieWithError("recvfrom() failed");
@@ -108,6 +111,8 @@ HandleInit(SOCKET sock, int isServer)
         broadcastAddr.sin_port = htons(35001);                            // Static port
 
         char recvBuf[2] = { 0xFE, 0xEF };
+
+        printf("About to send...\n");
         /* Client will send handshake message */
         if(sendto(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr)) != sizeof(recvBuf))
             DieWithError("sendto() failed");

@@ -23,19 +23,24 @@ main(int argc, char **argv)
         DieWithError("socket() failed");
 
     /* Set socket to broadcast */
-    int broadcastPermission = 1;
-    if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (void *) &broadcastPermission,
-                  sizeof(broadcastPermission)) < 0)
-        DieWithError("setsockopt() failed");
+    if(!isServer)
+    {
+        int broadcastPermission = 1;
+        if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (void *) &broadcastPermission,
+                    sizeof(broadcastPermission)) < 0)
+            DieWithError("setsockopt() failed");
+    }
+    else
+    {
+        /* Fill in our address */
+        memset(&clientAddr, 0, sizeof(clientAddr));
+        clientAddr.sin_family = AF_INET;
+        clientAddr.sin_addr.s_addr = htonl(INADDR_ANY); // ResolveHost("localhost"); // laziness
+        clientAddr.sin_port = htons(35001);        // Static port
 
-    /* Fill in our address */
-    memset(&clientAddr, 0, sizeof(clientAddr));
-    clientAddr.sin_family = AF_INET;
-    clientAddr.sin_addr.s_addr = htonl(INADDR_ANY); // ResolveHost("localhost"); // laziness
-    clientAddr.sin_port = htons(35001);        // Static port
-
-    if(bind(sock, (struct sockaddr *) &clientAddr, sizeof(struct sockaddr)) < 0)
-        DieWithError("bind() failed");
+        if(bind(sock, (struct sockaddr *) &clientAddr, sizeof(struct sockaddr)) < 0)
+            DieWithError("bind() failed");
+    }
 
     for(int i = 0; i < argc; ++i)
     {
@@ -99,15 +104,15 @@ HandleInit(SOCKET sock, int isServer)
         /* Fill in the broadcast address */
         memset(&broadcastAddr, 0, sizeof(struct sockaddr_in));
         broadcastAddr.sin_family = AF_INET;
-        broadcastAddr.sin_addr.s_addr = inet_addr("172.255.255.255");    // laziness
+        broadcastAddr.sin_addr.s_addr = inet_addr("172.29.255.255");    // laziness
         broadcastAddr.sin_port = htons(35001);                            // Static port
 
         char recvBuf[2] = { 0xFE, 0xEF };
         /* Client will send handshake message */
-        if(sendto(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr)) < 0)
+        if(sendto(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr)) != sizeof(recvBuf))
             DieWithError("sendto() failed");
         
-        if(recvBuf[0] == 0xFE && recvBuf[1] == 0xEF)
+        //if(recvBuf[0] == 0xFE && recvBuf[1] == 0xEF)
         {
             int recvMsgSize = 0;
             /* Give a response */

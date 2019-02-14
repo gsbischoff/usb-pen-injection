@@ -79,16 +79,14 @@ HandleInit(SOCKET sock, int isServer)
     {
         char recvBuf[2];
         /* Server will wait for the broadcast signal */
-        if(recvfrom(sock, recvBuf, sizeof(recvBuf), 0, &fromAddr, &fromLen) < 0)
+        if(recvfrom(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&fromAddr, &fromLen) < 0)
             DieWithError("recvfrom() failed");
 
         if(recvBuf[0] == 0xFE && recvBuf[1] == 0xEF)
         {
             /* Give a response */
-            if(sendto(sock, recvBuf, sizeof(recvBuf), 0, &fromAddr, sizeof(fromAddr)) < 0)
+            if(sendto(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&fromAddr, sizeof(fromAddr)) < 0)
                 DieWithError("sendto() failed");
-            
-            return fromAddr;
         }
     }
     else
@@ -102,18 +100,17 @@ HandleInit(SOCKET sock, int isServer)
 
         char recvBuf[2] = { 0xFE, 0xEF };
         /* Client will send handshake message */
-        if(sendto(sock, recvBuf, sizeof(recvBuf), 0, &broadcastAddr, sizeof(broadcastAddr)) < 0)
+        if(sendto(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr)) < 0)
             DieWithError("sendto() failed");
         
         if(recvBuf[0] == 0xFE && recvBuf[1] == 0xEF)
         {
             /* Give a response */
-            if(recvfrom(sock, recvBuf, sizeof(recvBuf), 0, &fromAddr, &fromLen) < 0)
+            if(recvfrom(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&fromAddr, &fromLen) < 0)
                 DieWithError("recvfrom() failed");
-            
-            return fromAddr;
         }
     }
+    return fromAddr;
 }
 
 void

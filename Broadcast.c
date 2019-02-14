@@ -75,12 +75,16 @@ HandleInit(SOCKET sock, int isServer)
 {
     struct sockaddr_in fromAddr = {0};
     int fromLen = sizeof(fromAddr);
+    
     if(isServer)
     {
         char recvBuf[2];
+        int recvMsgSize;
         /* Server will wait for the broadcast signal */
-        if(recvfrom(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&fromAddr, &fromLen) < 0)
+        if((recvMsgSize = recvfrom(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&fromAddr, &fromLen)) < 0)
             DieWithError("recvfrom() failed");
+
+        printf("Got %d bytes in a request\n", recvMsgSize);
 
         if(recvBuf[0] == 0xFE && recvBuf[1] == 0xEF)
         {
@@ -105,50 +109,13 @@ HandleInit(SOCKET sock, int isServer)
         
         if(recvBuf[0] == 0xFE && recvBuf[1] == 0xEF)
         {
+            int recvMsgSize = 0;
             /* Give a response */
-            if(recvfrom(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&fromAddr, &fromLen) < 0)
+            if((recvMsgSize = recvfrom(sock, recvBuf, sizeof(recvBuf), 0, (struct sockaddr *)&fromAddr, &fromLen)) < 0)
                 DieWithError("recvfrom() failed");
+
+            printf("Got %d bytes in handshake response\n", recvMsgSize);
         }
     }
     return fromAddr;
-}
-
-void
-HandleSend(SOCKET *s, struct sockaddr_in *to)
-{
-    struct sockaddr_in fromAddr;
-    int fromLen = sizeof(struct sockaddr);
-    char sendBuffer[256];
-
-    for(;;)
-    {
-        if(!fgets(sendBuffer, sizeof(sendBuffer), stdin))
-            exit(1);
-
-        if(sendto(*s, sendBuffer, strlen(sendBuffer), 0, (struct sockaddr *) 
-                to, sizeof(struct sockaddr_in)) < 0)
-                DieWithError("sendto() failed");
-    }
-}
-
-DWORD WINAPI
-HandleRecieve(void *s)
-{
-    SOCKET sock = *((SOCKET *)s);
-    struct sockaddr_in fromAddr;
-    int fromLen = sizeof(struct sockaddr);
-    char recvBuffer[256];
-    int recvMsgSize;
-
-    for(;;)
-    {
-        fromLen = sizeof(struct sockaddr);
-        if((recvMsgSize = recvfrom(sock, recvBuffer, sizeof(recvBuffer), 0, 
-            (struct sockaddr *) &fromAddr, &fromLen)) < 0)
-            DieWithError("recvfrom() failed");
-
-        recvBuffer[recvMsgSize] = '\0';
-
-        printf("%s: %s", inet_ntoa(fromAddr.sin_addr), recvBuffer);
-    }
 }

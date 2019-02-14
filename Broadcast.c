@@ -1,10 +1,8 @@
 #include "NetworkHeader.h"
 
-void
-HandleSend(SOCKET *s, struct sockaddr_in *to);
-DWORD WINAPI
-HandleRecieve(void *s);
-
+void HandleSend(SOCKET *s, struct sockaddr_in *to);
+DWORD WINAPI HandleRecieve(void *s);
+struct sockaddr_in HandleInit(SOCKET sock, int isServer);
 // -----
 //   Broadcast.c
 //        This program is a test server and client using

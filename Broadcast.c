@@ -114,11 +114,9 @@ HandleInit(SOCKET sock, int isServer)
         broadcastAddr.sin_addr.s_addr = inet_addr("172.29.255.255");    // laziness
         broadcastAddr.sin_port = htons(35001);                            // Static port
 
-        char recvBuf[2] = { 0xFE, 0xEF };
-
         printf("About to send...\n");
         /* Client will send handshake message */
-        if(sendto(sock, sendBuf, sizeof(sendBuf), 0, (struct sockaddr *) &broadcastAddr, sizeof(broadcastAddr)) != sizeof(recvBuf))
+        if(sendto(sock, sendBuf, sizeof(sendBuf), 0, (struct sockaddr *) &broadcastAddr, sizeof(broadcastAddr)) < 0)
             DieWithError("sendto() failed");
         
         //if(recvBuf[0] == 0xFE && recvBuf[1] == 0xEF)

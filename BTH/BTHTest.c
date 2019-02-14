@@ -3,7 +3,9 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
-#include <BluetoothAPIs.h>
+#include <SetupAPI.h>
+//#include <bluetoothapis.h>
+#include <bthledef.h>
 
 #include <stdio.h>
 
@@ -16,26 +18,30 @@ void DieWithError(char *errorMessage);
 int
 main(int argc, char **argv)
 {
-	HANDLE Radio;
-	BLUETOOTH_RADIO_INFO RadioInfo;
-	RadioInfo.dwSize = sizeof(BLUETOOTH_RADIO_INFO);
+	HDEVINFO hDevInfo;
+	hDevInfo = SetupDiGetClassDevs(
+		&GUID_BLUETOOTHLE_DEVICE_INTERFACE, 
+		NULL, NULL, DIGCF_PRESENT);
 
-	BLUETOOTH_FIND_RADIO_PARAMS RadioParams;
-	RadioParams.dwSize = sizeof(RadioParams);
+	if(hDevInfo == INVALID_HANDLE_VALUE)
+		DieWithError("SetupDiGetClassDevs() failed");
 
+	SP_DEVINFO_DATA DeviceInfoData;
+	ZeroMemory(&DeviceInfoData, sizeof(DeviceInfoData));
+	DeviceInfoData.cbSize = sizeof(DeviceInfoData);
 
-	HBLUETOOTH_RADIO_FIND RadioFind;
-	if((RadioFind = BluetoothFindFirstRadio(&RadioParams, &Radio)) == NULL)
-		DieWithError("BluetoothFindFirstRadio() failed");
+	for(DWORD MemberIndex = 0; 
+		SetupDiEnumDeviceInfo(
+			hDevInfo, 
+			MemberIndex,
+			&DeviceInfoData); 
+		++MemberIndex)
+	{
+		//DeviceInfoData.
+	}
 
-	// Success
-	if(BluetoothGetRadioInfo(Radio, &RadioInfo) != ERROR_SUCCESS)
-		DieWithError("BluetoothGetRadioInfo() failed");
-
-	BluetoothFindRadioClose(RadioFind);
-	CloseHandle(Radio);
-
-
+	SetupDiDestroyDeviceInfoList(hDevInfo);
+	DieWithError("Ended");
 	
 	return(0);
 }

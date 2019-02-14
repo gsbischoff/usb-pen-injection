@@ -18,6 +18,7 @@ main(int argc, char **argv)
 
 	UINT32 a;
 
+#if 0
 	if(GetPointerDevices(&a, NULL)) //NULL, &PointerDevices))
 	{
 		printf("Succeeded! a = %d\n", a);
@@ -45,7 +46,7 @@ main(int argc, char **argv)
 		LocalFree(buf);
 
 	}
-
+#endif
 
 	return(0);
 }

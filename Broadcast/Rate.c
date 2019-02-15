@@ -37,6 +37,7 @@ main(int ArgCount, char **Args)
                     if(ArgCount > Index + 1)
                     {
                         hostIP = Args[Index + 1];
+                        printf("HostIP: %s\n", hostIP);
                     }
                     else
                     {
@@ -50,6 +51,8 @@ main(int ArgCount, char **Args)
             }
         }
     }
+    if(bind(sock, (struct sockaddr *) &clientAddr, sizeof(struct sockaddr_in)) < 0)
+        DieWithError("bind() failed");
 
     struct sockaddr_in hostAddr;
     memset(&clientAddr, 0, sizeof(struct sockaddr_in));
@@ -57,22 +60,18 @@ main(int ArgCount, char **Args)
     hostAddr.sin_addr.s_addr = inet_addr(hostIP);  /* Any incoming interface */
     hostAddr.sin_port = htons(2020);               /* Port */
 
-    if(bind(sock, (struct sockaddr *) &clientAddr, sizeof(struct sockaddr_in)) < 0)
-        DieWithError("bind() failed");
-
-    printf("SIZE    TIME    RATE\n");
+    printf("     SIZE    TIME     RATE\n");
     struct sockaddr_in fromAddr;
     int fromLen = sizeof(fromAddr);
 
     if(isServer)
     {
         clock_t Start, End;
-        /* Server will send chunks of increasing size and wait for a acknowledgement */
+        /* Server will send chunks of increasing size and wait for a acknowledgement Rate.exe -s 172.29.178.1 */
         for(long long ChunkSize = 1;
             ChunkSize < (100ULL * 1024ULL * 1024ULL);
             ChunkSize *= 2)
         {
-            printf("     SIZE    TIME     RATE\n");
             printf("%9llu ", ChunkSize);
             Start = clock();
             /* Send a few times each */

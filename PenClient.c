@@ -1,4 +1,6 @@
 #include "NetworkHeader.h"
+#include <shtypes.h>
+#include <shellscalingapi.h>
 #include <time.h>
 
 POINTER_FLAGS ContextualizeFlags(POINTER_PEN_INFO *, POINTER_PEN_INFO *);
@@ -56,6 +58,41 @@ main(int argc, char **argv)
 
     if(bind(sock, (struct sockaddr *) &ClientAddr, sizeof(ClientAddr)) < 0)
         DieWithError("bind() failed");
+
+    {
+        // Get desktop dc
+        HDC desktopDC = GetDC(NULL);
+
+        // Get native resolution
+        int horizontalResolution = GetDeviceCaps(desktopDC, HORZRES);
+        int verticalResolution = GetDeviceCaps(desktopDC, VERTRES); // Accidentally called 'VERZRES' in example in doc
+
+        // Get native resolution
+        int horizontalDPI = GetDeviceCaps(desktopDC, LOGPIXELSX);
+        int verticalDPI = GetDeviceCaps(desktopDC, LOGPIXELSY);
+
+        printf("RES: [%d,%d], DPI: [%d,%d]\n\n", 
+            horizontalResolution, verticalResolution,
+            horizontalDPI, verticalDPI);
+
+        POINT Point = {0};
+        HMONITOR Monitor = MonitorFromPoint(Point, MONITOR_DEFAULTTOPRIMARY);
+        UINT X, Y;
+        GetDpiForMonitor(Monitor, MDT_EFFECTIVE_DPI, &X, &Y);
+        printf("Effective: (%u,%u)\n", X, Y);
+
+        GetDpiForMonitor(Monitor, MDT_RAW_DPI, &X, &Y);
+        printf("Effective: (%u,%u)\n", X, Y);
+
+        DEVICE_SCALE_FACTOR Scale;
+        if(S_OK != GetScaleFactorForMonitor(Monitor, &Scale))
+            DieWithError("GetScaleFactorForMonitor() failed");
+
+        if(Scale == SCALE_125_PERCENT)
+        {
+            printf("You're at 125 percent!!\n");
+        }
+    }
 
     unsigned char expandedBuf[178];
 

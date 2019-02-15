@@ -91,7 +91,8 @@ serialize(POINTER_PEN_INFO *Info)
 {
 	// Since we are
 	// 22 fields, 8 bytes each = 176 bytes + 2 bytes for 'byte order check field'
-	unsigned char *buf = malloc(178);
+	static unsigned char Buffer[178];
+	unsigned char *buf = Buffer;
 	unsigned char *ptr;
 
 	buf[0] = 0xff;

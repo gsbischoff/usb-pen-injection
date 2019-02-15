@@ -95,31 +95,27 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 	{
 		case WM_POINTERUPDATE:
 		{
-			UINT32 pi = GET_POINTERID_WPARAM(WParam);
+			UINT32 PointerID = GET_POINTERID_WPARAM(WParam);
 			//ResumeThread(ThreadHandle);
 			InterlockedIncrement(&NumHits);
 
 			POINTER_PEN_INFO Info = {0};
 			if(IS_POINTER_INRANGE_WPARAM(WParam) 
-			   && GetPointerPenInfo(pi, &Info))
+			   && GetPointerPenInfo(PointerID, &Info))
 			{
 				// PointerInfo struct + pressure (set touchmask + flags appropriately)
 				unsigned char *spreadStruct = serialize(&Info);
+
+				/*printf("(%5d,%5d) %5u\r", 
+					Info.pointerInfo.ptPixelLocation.x, 
+					Info.pointerInfo.ptPixelLocation.y, 
+					Info.pressure);*/
 
 				// sendInput(&Info, ...)
 				// Or add to thread's work queue (maybe use GetPointerPenInfoHistory()?)
 				if(sendto(sendSock, spreadStruct, 178, 0,
 					(struct sockaddr *) clnt, sizeof(struct sockaddr)) < 0)
 					DieWithError("sendto() failed");
-
-				unsigned long long chk = 0;
-				for(int i = 0; i < 178; ++i)
-					chk += spreadStruct[i];
-
-				printf("%llu  ", chk);
-
-				/* Free memory allocated in expand() */
-				//free(spreadStruct);
 			}
 
 			Result = DefWindowProc(Window, Message, WParam, LParam);

@@ -13,7 +13,7 @@ main(int ArgCount, char **Args)
     int isServer = 0;
     char *hostIP;
 
-    if((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
+    if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
         DieWithError("socket() failed");
 
     struct sockaddr_in clientAddr;
@@ -33,7 +33,10 @@ main(int ArgCount, char **Args)
                 case 's':
                 {
                     isServer = 1;
+                } break;
 
+                case 'h':
+                {
                     if(ArgCount > Index + 1)
                     {
                         hostIP = Args[Index + 1];
@@ -44,10 +47,6 @@ main(int ArgCount, char **Args)
                         exit(1);
                     }                    
                 } break;
-                default:
-                {
-
-                }
             }
         }
     }
@@ -60,12 +59,19 @@ main(int ArgCount, char **Args)
     hostAddr.sin_addr.s_addr = inet_addr(hostIP);  /* Any incoming interface */
     hostAddr.sin_port = htons(2020);               /* Port */
 
-    printf("     SIZE    TIME     RATE\n");
     struct sockaddr_in fromAddr;
     int fromLen = sizeof(fromAddr);
 
     if(isServer)
     {
+        if(listen(sock, 5) < 0)
+            DieWithError("listen() failed");
+
+        SOCKET connectedHost;
+        if(connectedHost = accept(sock, (struct sockaddr *) &fromAddr, &fromLen))
+            DieWithError("accept() failed");
+
+        printf("     SIZE    TIME     RATE\n");
         clock_t Start, End;
         /* Server will send chunks of increasing size and wait for a acknowledgement Rate.exe -s 172.29.178.1 */
         for(long long ChunkSize = 1;
@@ -79,31 +85,58 @@ main(int ArgCount, char **Args)
                 Index < 10;
                 ++Index)
             {
-                if(sendto(sock, Buffer, ChunkSize, 0, (struct sockaddr *) &hostAddr, sizeof(struct sockaddr)) < 0)
+                if(send(connectedHost, Buffer, ChunkSize, 0) < 0)
                     DieWithError("sendto() failed");
 
                 char Recv;
-                if(recvfrom(sock, &Recv, 1, 0, (struct sockaddr *) &fromAddr, &fromLen) < 0)
+                if(recv(connectedHost, &Recv, 1, 0) < 0)
                     DieWithError("recvfrom() failed");
             }
             End = clock();
+
             float Time = (((float)End - (float)Start) / 10000.f);
+            
             printf("%3.3f ", Time);
             printf("%3.3f \n", ((float)ChunkSize / 1000000.f) / Time);
         }
     }
     else
     {
+        printf("Starting client portion...\n");
+        if(connect(sock, (struct sockaddr *) &hostAddr, sizeof(struct sockaddr)) < 0)
+            DieWithError("connect() failed");
+
         /* Client will recieve message, check size, and  send a response */
         int bytesRecieved;
-        while((bytesRecieved = recvfrom(sock, Buffer, scanf(Buffer), 0,
-               (struct sockaddr *) &fromAddr, &fromLen)) >= 0)
+        for(long long ChunkSize = 1;
+            ChunkSize < (100ULL * 1024ULL * 1024ULL);
+            ChunkSize *= 2)
         {
-            printf("Got message of %9u bytes!\n", bytesRecieved);
+            printf("%9llu ", ChunkSize);
+            long long totalBytesRecv = 0;
 
-            if(sendto(sock, Buffer, 1, 0, (struct sockaddr *) &fromAddr, fromLen) < 0)
-                DieWithError("sendto() failed");
+            /* Send a few times each */
+            for(int Index = 0;
+                Index < 10;
+                ++Index)
+            {
+                while((bytesRecieved = recv(sock, Buffer, sizeof(Buffer), 0)) >= 0)
+                {
+                    totalBytesRecv += bytesRecieved;
+
+                    if(totalBytesRecv >= ChunkSize) break;
+                }
+
+                if(bytesRecieved < 0)
+                    DieWithError("recv() failed");
+                    
+                printf("Got message of %9llu bytes!\n", totalBytesRecv);
+
+                if(send(sock, Buffer, 1, 0) < 0)
+                    DieWithError("send() failed");
+            }
         }
+
     }
     
 }

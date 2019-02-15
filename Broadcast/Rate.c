@@ -68,7 +68,7 @@ main(int ArgCount, char **Args)
             DieWithError("listen() failed");
 
         SOCKET connectedHost;
-        if(connectedHost = accept(sock, (struct sockaddr *) &fromAddr, &fromLen))
+        if((connectedHost = accept(sock, (struct sockaddr *) &fromAddr, &fromLen)) < 0)
             DieWithError("accept() failed");
 
         printf("     SIZE    TIME     RATE\n");
@@ -96,8 +96,8 @@ main(int ArgCount, char **Args)
 
             float Time = (((float)End - (float)Start) / 10000.f);
             
-            printf("%3.3f ", Time);
-            printf("%3.3f \n", ((float)ChunkSize / 1000000.f) / Time);
+            printf("%03.3f ", Time);
+            printf("%03.3f \n", ((float)ChunkSize / 1000000.f) / Time);
         }
     }
     else

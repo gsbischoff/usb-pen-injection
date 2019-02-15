@@ -87,7 +87,7 @@ main(int argc, char **argv)
 }
 
 void
-InjectTouch(POINTER_PEN_INFO PenInfo, POINT *Lastpt, POINTER_FLAGS *lastMask)
+InjectPenInput(POINTER_PEN_INFO PenInfo, POINT *Lastpt, POINTER_FLAGS *lastMask)
 {
 	if(InitializeTouchInjection(1, TOUCH_FEEDBACK_DEFAULT))
 	{

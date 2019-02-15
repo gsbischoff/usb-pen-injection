@@ -119,7 +119,7 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 				printf("%llu  ", chk);
 
 				/* Free memory allocated in expand() */
-				free(spreadStruct);
+				//free(spreadStruct);
 			}
 
 			Result = DefWindowProc(Window, Message, WParam, LParam);
@@ -175,7 +175,7 @@ ThreadProc(LPVOID lpParameter)
 {
 	for(;;)
 	{
-		//printf("%03u hits.\n", InterlockedExchange(&NumHits, 0)); //
+		printf("%03u hits.\n", InterlockedExchange(&NumHits, 0)); //
 
 		Sleep(1000);
 

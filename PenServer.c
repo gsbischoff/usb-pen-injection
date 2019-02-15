@@ -55,15 +55,8 @@ main(int argc, char **argv)
 	if(bind(ServerSock, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
 		DieWithError("bind() failed");
 
-	//if(listen(ServerSock, 1) < 0)
-	//	DieWithError("listen() failed");
-
 	int ClientAddrLen = sizeof(ClientAddr);
 
-	//if((ClientSock = accept(ServerSock, (struct sockaddr *) &ClientAddr, &ClientAddrLen)) < 0)
-	//	DieWithError("accept() failed");
-
-	//printf("Recieved connection from %s!\n", inet_ntoa(ClientAddr.sin_addr));
 
 	printf("Press enter to begin...\n");
 

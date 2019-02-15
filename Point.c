@@ -103,6 +103,7 @@ WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 			if(IS_POINTER_INRANGE_WPARAM(WParam) 
 			   && GetPointerPenInfo(PointerID, &Info))
 			{
+				printf("FLAGS: %x\r", Info.pointerInfo.pointerFlags);
 				// PointerInfo struct + pressure (set touchmask + flags appropriately)
 				unsigned char *spreadStruct = serialize(&Info);
 
@@ -171,7 +172,7 @@ ThreadProc(LPVOID lpParameter)
 {
 	for(;;)
 	{
-		printf("%03u hits.\n", InterlockedExchange(&NumHits, 0)); //
+		//printf("%03u hits.\n", InterlockedExchange(&NumHits, 0)); //
 
 		Sleep(1000);
 

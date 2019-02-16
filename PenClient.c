@@ -60,6 +60,12 @@ main(int argc, char **argv)
         DieWithError("bind() failed");
 
     {
+DEVMODEA DevMode;
+    DevMode.dmSize = sizeof(DevMode);
+    EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &DevMode);
+
+    printf("HEIGHT: %d\n", DevMode.dmPelsWidth);
+
         // Get desktop dc
         HDC desktopDC = GetDC(NULL);
 
@@ -88,6 +94,7 @@ main(int argc, char **argv)
         if(S_OK != GetScaleFactorForMonitor(Monitor, &Scale))
             DieWithError("GetScaleFactorForMonitor() failed");
 
+        printf("Scale: %d\n", Scale);
         if(Scale == SCALE_125_PERCENT)
         {
             printf("You're at 125 percent!!\n");

@@ -13,6 +13,7 @@ main()
         printf("(%d,%d)\n", Rect.bottom, Rect.right);
     }
 
+    if(0)
     {
         int _dpiX;
         int _dpiY;
@@ -21,9 +22,14 @@ main()
         { 
             _dpiX = GetDeviceCaps(hdc, LOGPIXELSX); 
             _dpiY = GetDeviceCaps(hdc, LOGPIXELSY); 
-            ReleaseDC(NULL, hdc); 
+
+            printf("LOG DPI: (%d,%d)\n", _dpiX, _dpiY);
+
+            _dpiX = GetDeviceCaps(hdc, HORZSIZE); 
+            _dpiY = GetDeviceCaps(hdc, VERTSIZE); 
 
             printf("Caps: (%d,%d)\n", _dpiX, _dpiY);
+            ReleaseDC(NULL, hdc); 
 
             // Retrieve the horizontal and vertical resolution of the current display setting. 
             int cxScreen = GetSystemMetrics(SM_CXSCREEN); 

@@ -37,7 +37,7 @@ main(int argc, char **argv)
     if((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
         DieWithError("socket() failed");
 
-    if(!isServer)
+    if(isServer)
     {
         /* Set socket to broadcast */
         int broadcastPermission = 1;
@@ -86,7 +86,7 @@ HandleInit(SOCKET sock, int isServer)
     char sendBuf[20] = "Hello World!\n";
     char recvBuf[20];
     
-    if(isServer)
+    if(!isServer)
     {
         int recvMsgSize;
 

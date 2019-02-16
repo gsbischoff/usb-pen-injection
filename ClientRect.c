@@ -11,6 +11,8 @@ typedef struct
 
     int horizontalDPI;
     int verticalDPI;
+
+    int scalingPercent;
 } resolution_settings;
 
 resolution_settings
@@ -18,18 +20,27 @@ GetDeviceResolutionSettings()
 {
     resolution_settings Result;
 
+    // Get the device mode settings for actual values of resolution
+    DEVMODEA DevMode;
+    DevMode.dmSize = sizeof(DevMode);
+    EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &DevMode);
+
     // Get desktop dc
     HDC desktopDC = GetDC(NULL);
-
-    SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE);
 
     // Get native resolution
     Result.horizontalResolution = GetDeviceCaps(desktopDC, HORZRES);
     Result.verticalResolution = GetDeviceCaps(desktopDC, VERTRES); // Accidentally called 'VERZRES' in example in doc
 
+/*
     // Get native resolution
     Result.horizontalDPI = GetDeviceCaps(desktopDC, LOGPIXELSX);
     Result.verticalDPI = GetDeviceCaps(desktopDC, LOGPIXELSY);
+*/
+    Result.scalingPercent = (DevMode.dmPelsWidth * 100) / Result.horizontalResolution;
+
+    DevMode.dmPelsWidth;
+    DevMode.dmPelsHeight;
 
     return(Result);
 }

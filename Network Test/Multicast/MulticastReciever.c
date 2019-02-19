@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
     if (argc != 3)         /* Test for correct number of arguments */
     {
-        fprintf(stderr, "Usage: %s <Multicast IP> <Multicast Port>In", argv[0]);
+        fprintf(stderr, "Usage: %s <Multicast IP> <Multicast Port>\n", argv[0]);
         exit(1);
     }
 

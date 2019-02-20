@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
     struct WSAData data = { 0 };
 	WORD wVersionRequested = MAKEWORD(1,1);
 
+    if(WSAStartup(wVersionRequested, &data))
+		DieWithError("WSAStartup() failed");
+
     multicastIP = argv[1];          /* First arg' multicast IP address */
     multicastPort = atoi(argv[2]);  /* Second arg' multicast port */
     sendString = argv[3];           /* Third arg' string to multicast */
@@ -54,6 +57,8 @@ int main(int argc, char *argv[])
     sendStringLen = strlen(sendString);  /* Find length of sendString  */
     for (;;) /* Run forever */
     {
+        printf("Sending one...\n");
+        
         /* Multicast sendString in datagram to clients every 3 seconds */
         if (sendto(sock, sendString, sendStringLen, 0, (struct sockaddr *)
             &multicastAddr, sizeof(multicastAddr)) != sendStringLen)

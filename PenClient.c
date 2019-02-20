@@ -1,4 +1,9 @@
 #include "NetworkHeader.h"
+
+#include "ResolveHost.c"
+#include "Serial.c"
+#include "DieWithError.c"
+
 #include <shtypes.h>
 #include <shellscalingapi.h>
 #include <time.h>
